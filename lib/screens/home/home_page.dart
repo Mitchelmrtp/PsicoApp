@@ -1,11 +1,12 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ulimagym/models/entities/UserChat.dart';
 import 'package:ulimagym/models/entities/Usuario.dart';
-import 'package:ulimagym/pages/chatdata/chat_page.dart';
+import 'package:ulimagym/screens/chatdata/chat_page.dart';
 import 'package:ulimagym/pages/exercise/exercise_page.dart';
+import 'package:ulimagym/screens/home/prueba.dart';
 import 'package:ulimagym/pages/pantalla_inicio/inicio_initial_p.dart';
+import 'package:ulimagym/pages/profile/profile_page.dart';
 import 'package:ulimagym/pages/routine/routine_page.dart';
 import 'home_controller.dart';
 
@@ -14,14 +15,14 @@ class ContactSpecialistPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF112244),
+      backgroundColor: Color(0xFF112244), // Fondo azul oscuro
       appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Color(0xFF112244),
-        automaticallyImplyLeading: true,
-        centerTitle: true,
+        elevation: 0, // Sin sombra
+        backgroundColor: Color(0xFF112244), // Fondo del AppBar igual al fondo
+        automaticallyImplyLeading: true, // Mostrar el ícono de retroceso
+        centerTitle: true, // Centrar el ícono
         title: Icon(
-          Icons.sentiment_satisfied_alt,
+          Icons.sentiment_satisfied_alt, // Ícono de la carita
           color: Colors.white,
           size: 28,
         ),
@@ -30,7 +31,7 @@ class ContactSpecialistPage extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             child: CircleAvatar(
               radius: 15,
-              backgroundImage: NetworkImage('https://randomuser.me/api/portraits/women/44.jpg'),
+              backgroundImage: NetworkImage('https://randomuser.me/api/portraits/women/44.jpg'), // Imagen de perfil
             ),
           ),
         ],
@@ -47,26 +48,28 @@ class ContactSpecialistPage extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 40),
+            SizedBox(height: 40), // Espacio entre el texto y los botones
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
-                foregroundColor: Colors.white,
-                minimumSize: Size(200, 50),
+                backgroundColor: Colors.green, // Fondo verde
+                foregroundColor: Colors.white, // Texto blanco
+                minimumSize: Size(200, 50), // Tamaño del botón
               ),
               onPressed: () {
+                // Acción al confirmar
                 print("Confirmar contacto con especialista");
               },
               child: Text('CONFIRMAR'),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 20), // Espacio entre los botones
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                foregroundColor: Colors.white,
-                minimumSize: Size(200, 50),
+                backgroundColor: Colors.red, // Fondo rojo
+                foregroundColor: Colors.white, // Texto blanco
+                minimumSize: Size(200, 50), // Tamaño del botón
               ),
               onPressed: () {
+                // Regresar a la pantalla anterior
                 Navigator.pop(context);
               },
               child: Text('CANCELAR'),
@@ -92,27 +95,18 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
   Usuario user;
 
-  // Aquí creamos el `conversationId` y el `UserChat` necesario para ChatPage
-  final int conversationId = 1;
-  final UserChat userChat;
-
   late final List<Widget> _widgetOptions;
 
   bool _notificationsEnabled = true;
   bool _agendaEnabled = false;
   bool _monitoringEnabled = true;
 
-  _HomePageState({required this.user})
-      : userChat = UserChat(
-          id: user.id,
-          username: user.usuario,
-          createdAt: DateTime.now().toString(),
-        ) {
+  _HomePageState({required this.user}) {
     _widgetOptions = [
-      RoutinePage(user),  // Página de rutinas
-      ExercisePage(),  // Página de ejercicios
-      ChatPage(conversationId: conversationId, userChat: userChat),  // Página de chat
-      PantallaDeInicioInitialPage(),  // Página de inicio
+      RoutinePage(user),
+      ExercisePage(),
+      PruebaPage(),
+      PantallaDeInicioInitialPage(),
     ];
   }
 
@@ -126,11 +120,12 @@ class _HomePageState extends State<HomePage> {
   Widget _buildDrawer() {
     return Drawer(
       child: Container(
-        color: Color(0xFF112244),
+        color: Color(0xFF112244), // Color de fondo del Drawer
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            SizedBox(height: 20),
+            SizedBox(height: 20), // Espacio en la parte superior
+            // ExpansionTile para Notificaciones
             ExpansionTile(
               leading: Icon(Icons.notifications, color: Colors.white),
               title: Text('Notificaciones', style: TextStyle(color: Colors.white)),
@@ -155,26 +150,83 @@ class _HomePageState extends State<HomePage> {
                     // Implementar la selección de tono
                   },
                 ),
+                ListTile(
+                  title: Text('Agenda', style: TextStyle(color: Colors.white)),
+                  trailing: Switch(
+                    value: _agendaEnabled,
+                    onChanged: (value) {
+                      setState(() {
+                        _agendaEnabled = value;
+                      });
+                    },
+                  ),
+                  subtitle: Text(_agendaEnabled ? 'Activado' : 'Desactivado', style: TextStyle(color: Colors.grey)),
+                ),
+                ListTile(
+                  title: Text('Monitoreo emocional', style: TextStyle(color: Colors.white)),
+                  trailing: Switch(
+                    value: _monitoringEnabled,
+                    onChanged: (value) {
+                      setState(() {
+                        _monitoringEnabled = value;
+                      });
+                    },
+                  ),
+                  subtitle: Text(_monitoringEnabled ? 'Activado' : 'Desactivado', style: TextStyle(color: Colors.grey)),
+                ),
+                ListTile(
+                  title: Text('Monitorear', style: TextStyle(color: Colors.white)),
+                  trailing: Icon(Icons.arrow_drop_down, color: Colors.white),
+                  subtitle: Text('2 veces al día', style: TextStyle(color: Colors.grey)),
+                  onTap: () {
+                    // Implementar la selección de frecuencia de monitoreo
+                  },
+                ),
               ],
             ),
-            Divider(color: Colors.white24, thickness: 1),
+            Divider(color: Colors.white24, thickness: 1), // Línea divisora
             ListTile(
               leading: Icon(Icons.security, color: Colors.white),
               title: Text('Seguridad', style: TextStyle(color: Colors.white)),
               onTap: () {
-                // Acción de seguridad
+                // Acción al pulsar
               },
             ),
-            Spacer(),
+            Divider(color: Colors.white24, thickness: 1), // Línea divisora
+            ListTile(
+              leading: Icon(Icons.article, color: Colors.white),
+              title: Text('Términos y condiciones', style: TextStyle(color: Colors.white)),
+              onTap: () {
+                // Acción al pulsar
+              },
+            ),
+            Divider(color: Colors.white24, thickness: 1), // Línea divisora
+            ListTile(
+              leading: Icon(Icons.privacy_tip, color: Colors.white),
+              title: Text('Política de privacidad', style: TextStyle(color: Colors.white)),
+              onTap: () {
+                // Acción al pulsar
+              },
+            ),
+            Divider(color: Colors.white24, thickness: 1), // Línea divisora
+            ListTile(
+              leading: Icon(Icons.error_outline, color: Colors.white),
+              title: Text('Informar de un error', style: TextStyle(color: Colors.white)),
+              onTap: () {
+                // Acción al pulsar
+              },
+            ),
+            Spacer(), // Empuja el contenido hacia arriba para dejar espacio
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  foregroundColor: Colors.white,
-                  minimumSize: Size(double.infinity, 50),
+                  backgroundColor: Colors.red, // Fondo rojo para el botón
+                  foregroundColor: Colors.white, // Texto en blanco
+                  minimumSize: Size(double.infinity, 50), // Tamaño ancho completo
                 ),
                 onPressed: () {
+                  // Redirigir a la pantalla de confirmación
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -182,31 +234,32 @@ class _HomePageState extends State<HomePage> {
                     ),
                   );
                 },
-                child: Text('Contactar a un especialista'),
+                child: Text('Contacta a un especialista'),
               ),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 20), // Espacio debajo del botón
             Center(
               child: TextButton(
                 onPressed: () {
+                  // Redirigir a la pantalla de inicio de sesión
                   control.goToLogIn(context);
                 },
                 child: Text('Cerrar sesión', style: TextStyle(color: Colors.white)),
               ),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 20), // Espacio adicional para que quede alineado
           ],
         ),
       ),
     );
   }
 
-  // Icono de notificaciones en el AppBar
+  // Widget para el ícono de notificaciones
   Widget _notificationIcon() {
     return Stack(
       children: [
         IconButton(
-          icon: Icon(Icons.notifications_none, color: Colors.black),
+          icon: Icon(Icons.notifications_none, color: Colors.black), // Ícono de notificaciones
           onPressed: () {
             print("Abrir notificaciones");
           },
@@ -225,7 +278,7 @@ class _HomePageState extends State<HomePage> {
               minHeight: 12,
             ),
             child: Text(
-              '1',
+              '1', // Contador de notificaciones
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 8,
@@ -238,7 +291,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // Icono de perfil en el AppBar
+  // Widget para la imagen de perfil
   Widget _profileIcon() {
     return GestureDetector(
       onTap: () {
@@ -246,47 +299,47 @@ class _HomePageState extends State<HomePage> {
       },
       child: CircleAvatar(
         radius: 15,
-        backgroundImage: NetworkImage('https://randomuser.me/api/portraits/women/44.jpg'),
+        backgroundImage: NetworkImage('https://randomuser.me/api/portraits/women/44.jpg'), // URL de la imagen de perfil
       ),
     );
   }
 
-  // Carita sonriente en el centro del AppBar
+  // Agregar la carita sonriente en el centro del AppBar
   Widget _smileIcon() {
     return Icon(
-      Icons.sentiment_satisfied_alt,
+      Icons.sentiment_satisfied_alt, // Ícono de carita sonriente
       color: Colors.black,
-      size: 28,
+      size: 28, // Tamaño ajustado al mockup
     );
   }
 
-  // Barra de navegación inferior
+  // Actualizar los iconos del BottomNavigationBar
   Widget _navigationBottom() {
     return BottomNavigationBar(
       items: <BottomNavigationBarItem>[
         BottomNavigationBarItem(
-          icon: Icon(Icons.star_border),
+          icon: Icon(Icons.star_border), // Ícono de estrella
           label: '',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.photo_camera_outlined),
+          icon: Icon(Icons.photo_camera_outlined), // Ícono de cámara
           label: '',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.chat_bubble_outline),
+          icon: Icon(Icons.chat_bubble_outline), // Ícono de chat
           label: '',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.person_outline),
+          icon: Icon(Icons.person_outline), // Ícono de perfil
           label: '',
         ),
       ],
       currentIndex: _selectedIndex,
-      selectedItemColor: Color(0XFFF26F29),
-      unselectedItemColor: Colors.black,
-      backgroundColor: Colors.white,
-      showSelectedLabels: false,
-      showUnselectedLabels: false,
+      selectedItemColor: Color(0XFFF26F29), // Color seleccionado
+      unselectedItemColor: Colors.black, // Color de los íconos no seleccionados
+      backgroundColor: Colors.white, // Fondo blanco
+      showSelectedLabels: false, // Sin etiquetas
+      showUnselectedLabels: false, // Sin etiquetas
       onTap: _onItemTapped,
     );
   }
@@ -297,25 +350,25 @@ class _HomePageState extends State<HomePage> {
       home: Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
-          elevation: 0,
-          backgroundColor: Colors.white,
+          elevation: 0, // Sin sombra
+          backgroundColor: Colors.white, // Fondo blanco para el AppBar
           automaticallyImplyLeading: false,
           leading: Builder(
             builder: (context) => IconButton(
               icon: Icon(Icons.menu, color: Colors.black),
-              onPressed: () => Scaffold.of(context).openDrawer(),
+              onPressed: () => Scaffold.of(context).openDrawer(), // Abre el Drawer
             ),
           ),
-          centerTitle: true,
-          title: _smileIcon(),
+          centerTitle: true, // Carita sonriente centrada
+          title: _smileIcon(), // Carita sonriente
           actions: [
-            _notificationIcon(),
-            _profileIcon(),
+            _notificationIcon(), // Ícono de notificaciones
+            _profileIcon(), // Ícono de perfil
           ],
         ),
-        drawer: _buildDrawer(),
-        body: _widgetOptions.elementAt(_selectedIndex),
-        bottomNavigationBar: _navigationBottom(),
+        drawer: _buildDrawer(), // Drawer como menú lateral
+        body: _widgetOptions.elementAt(_selectedIndex), // Contenido del body
+        bottomNavigationBar: _navigationBottom(), // Barra de navegación inferior
       ),
     );
   }

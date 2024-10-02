@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../services/user_service.dart';
-import 'package:ulimagym/pages/login/login_page.dart';
-import 'package:ulimagym/pages/signin/signin_page.dart';
+import 'package:ulimagym/screens/Auth/Login/login_page.dart';
+import 'package:ulimagym/screens/Auth/Signin/signin_page.dart';
 
 class RecoverController extends GetxController {
   TextEditingController dniController = TextEditingController();

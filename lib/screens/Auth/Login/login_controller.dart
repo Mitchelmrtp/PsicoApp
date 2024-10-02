@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_rx/get_rx.dart';
-import 'package:ulimagym/pages/home/home_page.dart';
-import '../../models/entities/Usuario.dart';
-import '../../models/responses/user_member.dart';
-import '../../services/user_service.dart';
-import '../recover/recover_page.dart';
-import '../signin/signin_page.dart';
+import 'package:ulimagym/screens/home/home_page.dart';
+import '../../../models/entities/Usuario.dart';
+import '../../../models/responses/user_member.dart';
+import '../../../services/user_service.dart';
+import '../../../pages/recover/recover_page.dart';
+import '../Signin/signin_page.dart';
 
 class LoginController extends GetxController {
   TextEditingController userController = TextEditingController();
