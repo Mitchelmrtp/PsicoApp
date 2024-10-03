@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ulimagym/models/entities/Doctor.dart';
 import 'package:ulimagym/models/entities/Usuario.dart';
 import 'package:ulimagym/screens/Report/home_report_page.dart';
 import 'package:ulimagym/screens/home/prueba.dart';
 import 'package:ulimagym/screens/profile/doctor/doctor_page.dart';
+import 'package:ulimagym/screens/profile/paciente/userprofile_page.dart';
 import 'home_controller.dart';
 
-// Pantalla de confirmación para contactar a un especialista
 class ContactSpecialistPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -85,14 +84,13 @@ class HomePage extends StatefulWidget {
   const HomePage({Key? key, required this.usuarioLogged}) : super(key: key);
 
   @override
-  _HomePageState createState() => _HomePageState(user: usuarioLogged);
+  _HomePageState createState() => _HomePageState(usuarioLogged: usuarioLogged);
 }
 
 class _HomePageState extends State<HomePage> {
+  final Usuario usuarioLogged;
   HomeController control = Get.put(HomeController());
   int _selectedIndex = 0;
-  Usuario user;
-  int doctorId;  // Añadir doctorId aquí
 
   late final List<Widget> _widgetOptions;
 
@@ -100,15 +98,19 @@ class _HomePageState extends State<HomePage> {
   bool _agendaEnabled = false;
   bool _monitoringEnabled = true;
 
-  _HomePageState({required this.user}) : doctorId = 1 { // Asignar doctorId desde el usuario logueado
+  _HomePageState({required this.usuarioLogged});
+
+  @override
+  void initState() {
+    super.initState();
+    // Definir las pantallas a mostrar en el BottomNavigationBar
     _widgetOptions = [
-      HomeReportPage(user),
+      HomeReportPage(usuarioLogged),
       PruebaPage(),
-      PruebaPage(),
-      DoctorProfilePage(doctorId: doctorId) // Usar el doctorId aquí
+      UsuarioProfilePage(usuario: usuarioLogged), // Perfil del usuario logueado
+      DoctorProfilePage(doctorId: usuarioLogged.id) // Se asume que el id del usuario es el del doctor en este caso
     ];
   }
-
 
   void _onItemTapped(int index) {
     setState(() {
@@ -318,16 +320,25 @@ class _HomePageState extends State<HomePage> {
               print("Abrir notificaciones");
             },
           ),
+          // Dentro de las acciones en AppBar
           GestureDetector(
             onTap: () {
-              print("Perfil del usuario");
+              // Al hacer clic en la imagen, ir al perfil del usuario
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => UsuarioProfilePage(usuario: usuarioLogged), // Pasar los datos del usuario
+                ),
+              );
             },
             child: CircleAvatar(
               radius: 15,
               backgroundImage: NetworkImage(
-                  'https://randomuser.me/api/portraits/women/44.jpg'), // URL de la imagen de perfil
+                'https://randomuser.me/api/portraits/women/44.jpg', // URL de la imagen de perfil
+              ),
             ),
           ),
+
         ],
       ),
       drawer: _buildDrawer(), // Drawer como menú lateral

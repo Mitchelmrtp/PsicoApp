@@ -38,9 +38,65 @@ class UserService {
     }
   }
 
+  Future<Usuario?> updateUsuario(Usuario usuario, {String? imagePath}) async {
+    String url = "${BASE_URL}usuarios/${usuario.id}";
+    
+    // Si se sube una imagen, utilizamos Multipart para enviar tanto los datos del usuario como la imagen
+    if (imagePath != null && imagePath.isNotEmpty) {
+      var request = http.MultipartRequest('PUT', Uri.parse(url));
+      request.fields['nombreCompleto'] = usuario.nombreCompleto;
+      request.fields['correo'] = usuario.correo;
+      request.fields['numeroCelular'] = usuario.numeroCelular;
+      request.fields['DNI'] = usuario.DNI;
+      
+      // Agregar la imagen como parte del cuerpo de la solicitud
+      request.files.add(await http.MultipartFile.fromPath('image', imagePath));
+      
+      try {
+        var response = await request.send();
+        if (response.statusCode == 200) {
+          var responseBody = await response.stream.bytesToString();
+          final updatedUsuario = Usuario.fromJson(json.decode(responseBody));
+          return updatedUsuario;
+        } else {
+          print('Error al actualizar el usuario!');
+          return null;
+        }
+      } catch (e, stackTrace) {
+        print('Error no esperado: $e');
+        print(stackTrace);
+        return null;
+      }
+    } else {
+      // Si no hay imagen, enviamos los datos con PUT directamente
+      try {
+        var response = await http.put(
+          Uri.parse(url),
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode({
+            "nombreCompleto": usuario.nombreCompleto,
+            "correo": usuario.correo,
+            "numeroCelular": usuario.numeroCelular,
+            "DNI": usuario.DNI,
+          }),
+        );
 
+        if (response.statusCode == 200) {
+          var responseBody = json.decode(response.body);
+          final updatedUsuario = Usuario.fromJson(responseBody);
+          return updatedUsuario;
+        } else {
+          print('Error al actualizar el usuario!');
+          return null;
+        }
+      } catch (e) {
+        print('Error no esperado: $e');
+        return null;
+      }
+    }
+  }
 
- Future<Usuario?> register(
+  Future<Usuario?> register(
       String nombreCompleto, String correo, String dni, String tipoUsuario,
       String numeroCelular, String contrasena) async {
     String url = "${BASE_URL}usuarios";  // Ruta de creación de usuario
@@ -75,8 +131,6 @@ class UserService {
     }
   }
 
-
-  
   Future<String?> reset(String dni, String email) async {
     String url = "${BASE_URL}user/reset";
     var request = http.MultipartRequest('POST', Uri.parse(url));
