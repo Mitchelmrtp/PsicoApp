@@ -1,44 +1,53 @@
-import 'dart:convert';
-
-Usuario usuarioFromJson(String str) => Usuario.fromJson(json.decode(str));
-
-String usuarioToJson(Usuario data) => json.encode(data.toJson());
-
 class Usuario {
   int id;
-  String usuario;
-  String contrasenia;
-  int miembroId;
+  String nombreCompleto;
+  String correo;
+  String DNI;
+  String tipoUsuario;
+  String numeroCelular;
+  String contrasena;
+  bool admin;
 
   Usuario.empty()
       : id = 0,
-        usuario = '',
-        contrasenia = '',
-        miembroId = 0;
+        nombreCompleto = '',
+        correo = '',
+        DNI = '',
+        tipoUsuario = '',
+        numeroCelular = '',
+        contrasena = '',
+        admin = false;
 
   Usuario({
     required this.id,
-    required this.usuario,
-    required this.contrasenia,
-    required this.miembroId,
+    required this.nombreCompleto,
+    required this.correo,
+    required this.DNI,
+    required this.tipoUsuario,
+    required this.numeroCelular,
+    required this.contrasena,
+    required this.admin,
   });
 
   factory Usuario.fromJson(Map<String, dynamic> json) => Usuario(
         id: json["id"],
-        usuario: json["usuario"],
-        contrasenia: json["contrasenia"],
-        miembroId: json["miembro_id"],
+        nombreCompleto: json["nombreCompleto"],
+        correo: json["correo"],
+        DNI: json["DNI"],
+        tipoUsuario: json["tipoUsuario"],
+        numeroCelular: json["numeroCelular"],
+        contrasena: json["contrasena"],
+        admin: json["Admin"],
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
-        "usuario": usuario,
-        "contrasenia": contrasenia,
-        "miembro_id": miembroId,
+        "nombreCompleto": nombreCompleto,
+        "correo": correo,
+        "DNI": DNI,
+        "tipoUsuario": tipoUsuario,
+        "numeroCelular": numeroCelular,
+        "contrasena": contrasena,
+        "Admin": admin,
       };
-
-  @override
-  String toString() {
-    return 'Usuario -> id: ${id}, usuario: ${this.usuario}, contrasenia: ${this.contrasenia}, miembroId: ${this.miembroId},';
-  }
 }

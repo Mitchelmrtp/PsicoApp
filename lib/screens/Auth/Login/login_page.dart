@@ -5,197 +5,201 @@ import 'login_controller.dart';
 class LoginPage extends StatelessWidget {
   LoginController control = Get.put(LoginController());
 
-  Widget _form(BuildContext context) {
-    return SingleChildScrollView( // Permite desplazarse si el contenido es demasiado grande
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          // Logo container
-          Container(
-            width: 100,
-            height: 100,
-            padding: EdgeInsets.all(0),
-            margin: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(29),
-            ),
-            child: AspectRatio(
-              aspectRatio: 1,
-              child: Image.asset(
-                'assets/images/logo.png',
-                fit: BoxFit.contain,
-              ),
-            ),
-          ),
-          SizedBox(height: 40),
-          // Input container
-          Container(
-            width: 290,
-            height: 165,
-            padding: EdgeInsets.all(20),
-            margin: EdgeInsets.symmetric(horizontal: 40),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(48),
-            ),
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Color.fromRGBO(53, 68, 122, 1), // Color de fondo azul
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(horizontal: 20),
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Campo de texto para el usuario con un underline más corto
-                Container(
-                  width: 210, // Ajusta el ancho deseado del underline
-                  child: TextField(
-                    style: TextStyle(fontSize: 16),
-                    decoration: InputDecoration(
-                      labelText: 'Usuario',
-                      labelStyle: TextStyle(color: Colors.grey),
-                      enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                          color: const Color.fromRGBO(53, 68, 122, 1),
-                          width: 2.0, // Grosor de la línea cuando el TextField no está enfocado
-                        ),
-                      ),
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                          color: const Color.fromRGBO(252, 201, 180, 1),
-                          width: 3.0, // Grosor de la línea cuando el TextField está enfocado
-                        ),
-                      ),
-                      contentPadding: EdgeInsets.only(
-                        bottom: -10, // Acerca el labelText al underline
-                        left: 0,
-                        right: 0,
-                      ),
+                // Logo del sistema
+                _buildLogo(),
+                SizedBox(height: 40),
+                // Formulario de Login
+                _buildForm(context),
+                SizedBox(height: 20),
+                // Botón para iniciar sesión
+                _buildLoginButton(context),
+                SizedBox(height: 20),
+                // Botón para registrarse
+                _buildRegisterButton(context),
+                SizedBox(height: 60),
+                // Opción de recuperar contraseña
+                GestureDetector(
+                  onTap: () => control.goToRecover(context),
+                  child: Text(
+                    '¿Olvidaste tu contraseña?',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.white,
+                      decoration: TextDecoration.underline,
                     ),
-                    controller: control.userController,
                   ),
                 ),
-                SizedBox(height: 10),
-                // Campo de texto para la contraseña con un underline más corto
-                Container(
-                  width: 210, // Ajusta el ancho deseado del underline
-                  child: TextField(
-                    style: TextStyle(fontSize: 16),
-                    decoration: InputDecoration(
-                      labelText: 'Contraseña',
-                      labelStyle: TextStyle(color: Colors.grey),
-                      enabledBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                          color: const Color.fromRGBO(53, 68, 122, 1),
-                          width: 2.0, // Grosor de la línea cuando el TextField no está enfocado
+                SizedBox(height: 20),
+                // Mensaje de error o éxito
+                Obx(() => control.message.isNotEmpty
+                    ? Text(
+                        control.message.value,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: control.messageColor.value,
                         ),
-                      ),
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                          color: const Color.fromRGBO(252, 201, 180, 1),
-                          width: 3.0, // Grosor de la línea cuando el TextField está enfocado
-                        ),
-                      ),
-                      contentPadding: EdgeInsets.only(
-                        bottom: -10, // Acerca el labelText al underline
-                        left: 0,
-                        right: 0,
-                      ),
-                    ),
-                    controller: control.passController,
-                  ),
-                ),
+                      )
+                    : SizedBox.shrink()),
               ],
             ),
           ),
-          SizedBox(height: 30),
-          // Login button
-          Container(
-             width: 300,
-            height: 60,
-            padding: EdgeInsets.symmetric(horizontal: 40),
-            child: SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () => control.login(context),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: Color(0xFF3E4A67),
-                  padding: EdgeInsets.symmetric(vertical: 15),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(48),
-                  ),
-                ),
-                child: Text(
-                  'Iniciar sesión',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLogo() {
+    return Container(
+      width: 100,
+      height: 100,
+      padding: EdgeInsets.all(0),
+      margin: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(29),
+      ),
+      child: AspectRatio(
+        aspectRatio: 1,
+        child: Image.asset(
+          'assets/images/logo.png', // Asegúrate de tener el logo en la ruta correcta
+          fit: BoxFit.contain,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildForm(BuildContext context) {
+    return Container(
+      width: 290,
+      height: 165,
+      padding: EdgeInsets.all(20),
+      margin: EdgeInsets.symmetric(horizontal: 40),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(48),
+      ),
+      child: Column(
+        children: [
+          // Campo de texto para el correo
+          _buildTextField(
+            controller: control.userController,
+            labelText: 'Correo',
           ),
-          SizedBox(height: 20),
-          // Register button
-          Container(
-            width: 300,
-            height: 60,
-            padding: EdgeInsets.symmetric(horizontal: 40),
-            child: SizedBox(
-              width: double.infinity,
-              child: OutlinedButton(
-                onPressed: () => control.goToSignIn(context),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: Colors.white,
-                  side: BorderSide(color: Colors.white),
-                  padding: EdgeInsets.symmetric(vertical: 15),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(48),
-                  ),
-                ),
-                child: Text(
-                  'Registrarse',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          SizedBox(height: 60),
-          // Forgot password link
-          GestureDetector(
-            onTap: () => control.goToRecover(context),
-            child: Text(
-              '¿Olvidaste tu contraseña?',
-              style: TextStyle(
-                fontSize: 18,
-                color: Colors.white,
-                decoration: TextDecoration.underline,
-              ),
-            ),
+          SizedBox(height: 10),
+          // Campo de texto para la contraseña
+          _buildTextField(
+            controller: control.passController,
+            labelText: 'Contraseña',
+            obscureText: true,
           ),
         ],
       ),
     );
   }
 
-  Widget _background(BuildContext context) {
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String labelText,
+    bool obscureText = false,
+  }) {
     return Container(
-      color: Color.fromRGBO(53, 68, 122, 1),
+      width: 210,
+      child: TextField(
+        controller: controller,
+        obscureText: obscureText,
+        style: TextStyle(fontSize: 16),
+        decoration: InputDecoration(
+          labelText: labelText,
+          labelStyle: TextStyle(color: Colors.grey),
+          enabledBorder: UnderlineInputBorder(
+            borderSide: BorderSide(
+              color: const Color.fromRGBO(53, 68, 122, 1),
+              width: 2.0,
+            ),
+          ),
+          focusedBorder: UnderlineInputBorder(
+            borderSide: BorderSide(
+              color: const Color.fromRGBO(252, 201, 180, 1),
+              width: 3.0,
+            ),
+          ),
+          contentPadding: EdgeInsets.only(
+            bottom: -10, // Acerca el labelText al underline
+            left: 0,
+            right: 0,
+          ),
+        ),
+      ),
     );
   }
 
-  Widget _buildBody(BuildContext context) {
-    return Stack(
-      children: [
-        _background(context),
-        Center(child: _form(context)),
-      ],
+  Widget _buildLoginButton(BuildContext context) {
+    return Container(
+      width: 300,
+      height: 60,
+      padding: EdgeInsets.symmetric(horizontal: 40),
+      child: SizedBox(
+        width: double.infinity,
+        child: ElevatedButton(
+          onPressed: () => control.login(context),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.white,
+            foregroundColor: Color(0xFF3E4A67),
+            padding: EdgeInsets.symmetric(vertical: 15),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(48),
+            ),
+          ),
+          child: Text(
+            'Iniciar sesión',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ),
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: _buildBody(context),
+  Widget _buildRegisterButton(BuildContext context) {
+    return Container(
+      width: 300,
+      height: 60,
+      padding: EdgeInsets.symmetric(horizontal: 40),
+      child: SizedBox(
+        width: double.infinity,
+        child: OutlinedButton(
+          onPressed: () => control.goToSignIn(context),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: Colors.white,
+            side: BorderSide(color: Colors.white),
+            padding: EdgeInsets.symmetric(vertical: 15),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(48),
+            ),
+          ),
+          child: Text(
+            'Registrarse',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

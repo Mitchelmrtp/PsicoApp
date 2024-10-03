@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../models/entities/Usuario.dart';
 
-class RoutineController extends GetxController {
+class HomeReportController extends GetxController {
   // Declaración de la variable `user`
   Usuario user = Usuario.empty();
 

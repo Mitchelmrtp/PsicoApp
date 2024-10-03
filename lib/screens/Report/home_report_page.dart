@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'routine_controller.dart';
+import 'home_report_controller.dart';
 import '../../models/entities/Usuario.dart'; // Importa el modelo de Usuario
 
-class RoutinePage extends StatelessWidget {
-  final RoutineController control = Get.put(RoutineController());
+class HomeReportPage extends StatelessWidget {
+  final HomeReportController control = Get.put(HomeReportController());
   final Usuario usuarioLogged; // Declaración de la variable usuario
 
   // Constructor que recibe el usuario
-  RoutinePage(this.usuarioLogged) {
+  HomeReportPage(this.usuarioLogged) {
     control.user = usuarioLogged; // Asignar el usuario al controlador
   }
 

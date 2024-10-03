@@ -1,13 +1,12 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:ulimagym/models/entities/Doctor.dart';
 import 'package:ulimagym/models/entities/Usuario.dart';
-import 'package:ulimagym/screens/chatdata/chat_page.dart';
 import 'package:ulimagym/pages/exercise/exercise_page.dart';
-import 'package:ulimagym/screens/home/prueba.dart';
 import 'package:ulimagym/pages/pantalla_inicio/inicio_initial_p.dart';
-import 'package:ulimagym/pages/profile/profile_page.dart';
-import 'package:ulimagym/pages/routine/routine_page.dart';
+import 'package:ulimagym/screens/Report/home_report_page.dart';
+import 'package:ulimagym/screens/home/prueba.dart';
+import 'package:ulimagym/screens/profile/doctor/doctor_page.dart';
 import 'home_controller.dart';
 
 // Pantalla de confirmación para contactar a un especialista
@@ -31,7 +30,8 @@ class ContactSpecialistPage extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             child: CircleAvatar(
               radius: 15,
-              backgroundImage: NetworkImage('https://randomuser.me/api/portraits/women/44.jpg'), // Imagen de perfil
+              backgroundImage: NetworkImage(
+                  'https://randomuser.me/api/portraits/women/44.jpg'), // Imagen de perfil
             ),
           ),
         ],
@@ -103,10 +103,10 @@ class _HomePageState extends State<HomePage> {
 
   _HomePageState({required this.user}) {
     _widgetOptions = [
-      RoutinePage(user),
+      HomeReportPage(user),
       ExercisePage(),
       PruebaPage(),
-      PantallaDeInicioInitialPage(),
+      DoctorPage(),
     ];
   }
 
@@ -128,10 +128,12 @@ class _HomePageState extends State<HomePage> {
             // ExpansionTile para Notificaciones
             ExpansionTile(
               leading: Icon(Icons.notifications, color: Colors.white),
-              title: Text('Notificaciones', style: TextStyle(color: Colors.white)),
+              title: Text('Notificaciones',
+                  style: TextStyle(color: Colors.white)),
               children: <Widget>[
                 ListTile(
-                  title: Text('Activar Notificaciones', style: TextStyle(color: Colors.white)),
+                  title: Text('Activar Notificaciones',
+                      style: TextStyle(color: Colors.white)),
                   trailing: Switch(
                     value: _notificationsEnabled,
                     onChanged: (value) {
@@ -140,12 +142,15 @@ class _HomePageState extends State<HomePage> {
                       });
                     },
                   ),
-                  subtitle: Text(_notificationsEnabled ? 'Activado' : 'Desactivado', style: TextStyle(color: Colors.grey)),
+                  subtitle: Text(_notificationsEnabled ? 'Activado' : 'Desactivado',
+                      style: TextStyle(color: Colors.grey)),
                 ),
                 ListTile(
-                  title: Text('Tono de notificación', style: TextStyle(color: Colors.white)),
+                  title: Text('Tono de notificación',
+                      style: TextStyle(color: Colors.white)),
                   trailing: Icon(Icons.arrow_drop_down, color: Colors.white),
-                  subtitle: Text('Latido de corazón', style: TextStyle(color: Colors.grey)),
+                  subtitle: Text('Latido de corazón',
+                      style: TextStyle(color: Colors.grey)),
                   onTap: () {
                     // Implementar la selección de tono
                   },
@@ -160,10 +165,13 @@ class _HomePageState extends State<HomePage> {
                       });
                     },
                   ),
-                  subtitle: Text(_agendaEnabled ? 'Activado' : 'Desactivado', style: TextStyle(color: Colors.grey)),
+                  subtitle:
+                      Text(_agendaEnabled ? 'Activado' : 'Desactivado',
+                          style: TextStyle(color: Colors.grey)),
                 ),
                 ListTile(
-                  title: Text('Monitoreo emocional', style: TextStyle(color: Colors.white)),
+                  title: Text('Monitoreo emocional',
+                      style: TextStyle(color: Colors.white)),
                   trailing: Switch(
                     value: _monitoringEnabled,
                     onChanged: (value) {
@@ -172,15 +180,9 @@ class _HomePageState extends State<HomePage> {
                       });
                     },
                   ),
-                  subtitle: Text(_monitoringEnabled ? 'Activado' : 'Desactivado', style: TextStyle(color: Colors.grey)),
-                ),
-                ListTile(
-                  title: Text('Monitorear', style: TextStyle(color: Colors.white)),
-                  trailing: Icon(Icons.arrow_drop_down, color: Colors.white),
-                  subtitle: Text('2 veces al día', style: TextStyle(color: Colors.grey)),
-                  onTap: () {
-                    // Implementar la selección de frecuencia de monitoreo
-                  },
+                  subtitle: Text(
+                      _monitoringEnabled ? 'Activado' : 'Desactivado',
+                      style: TextStyle(color: Colors.grey)),
                 ),
               ],
             ),
@@ -195,7 +197,8 @@ class _HomePageState extends State<HomePage> {
             Divider(color: Colors.white24, thickness: 1), // Línea divisora
             ListTile(
               leading: Icon(Icons.article, color: Colors.white),
-              title: Text('Términos y condiciones', style: TextStyle(color: Colors.white)),
+              title: Text('Términos y condiciones',
+                  style: TextStyle(color: Colors.white)),
               onTap: () {
                 // Acción al pulsar
               },
@@ -203,7 +206,8 @@ class _HomePageState extends State<HomePage> {
             Divider(color: Colors.white24, thickness: 1), // Línea divisora
             ListTile(
               leading: Icon(Icons.privacy_tip, color: Colors.white),
-              title: Text('Política de privacidad', style: TextStyle(color: Colors.white)),
+              title: Text('Política de privacidad',
+                  style: TextStyle(color: Colors.white)),
               onTap: () {
                 // Acción al pulsar
               },
@@ -211,7 +215,8 @@ class _HomePageState extends State<HomePage> {
             Divider(color: Colors.white24, thickness: 1), // Línea divisora
             ListTile(
               leading: Icon(Icons.error_outline, color: Colors.white),
-              title: Text('Informar de un error', style: TextStyle(color: Colors.white)),
+              title: Text('Informar de un error',
+                  style: TextStyle(color: Colors.white)),
               onTap: () {
                 // Acción al pulsar
               },
@@ -244,7 +249,8 @@ class _HomePageState extends State<HomePage> {
                   // Redirigir a la pantalla de inicio de sesión
                   control.goToLogIn(context);
                 },
-                child: Text('Cerrar sesión', style: TextStyle(color: Colors.white)),
+                child: Text('Cerrar sesión',
+                    style: TextStyle(color: Colors.white)),
               ),
             ),
             SizedBox(height: 20), // Espacio adicional para que quede alineado
@@ -254,69 +260,10 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // Widget para el ícono de notificaciones
-  Widget _notificationIcon() {
-    return Stack(
-      children: [
-        IconButton(
-          icon: Icon(Icons.notifications_none, color: Colors.black), // Ícono de notificaciones
-          onPressed: () {
-            print("Abrir notificaciones");
-          },
-        ),
-        Positioned(
-          right: 11,
-          top: 11,
-          child: Container(
-            padding: EdgeInsets.all(2),
-            decoration: BoxDecoration(
-              color: Colors.red,
-              borderRadius: BorderRadius.circular(6),
-            ),
-            constraints: BoxConstraints(
-              minWidth: 12,
-              minHeight: 12,
-            ),
-            child: Text(
-              '1', // Contador de notificaciones
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 8,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
-        )
-      ],
-    );
-  }
-
-  // Widget para la imagen de perfil
-  Widget _profileIcon() {
-    return GestureDetector(
-      onTap: () {
-        print("Perfil del usuario");
-      },
-      child: CircleAvatar(
-        radius: 15,
-        backgroundImage: NetworkImage('https://randomuser.me/api/portraits/women/44.jpg'), // URL de la imagen de perfil
-      ),
-    );
-  }
-
-  // Agregar la carita sonriente en el centro del AppBar
-  Widget _smileIcon() {
-    return Icon(
-      Icons.sentiment_satisfied_alt, // Ícono de carita sonriente
-      color: Colors.black,
-      size: 28, // Tamaño ajustado al mockup
-    );
-  }
-
   // Actualizar los iconos del BottomNavigationBar
   Widget _navigationBottom() {
     return BottomNavigationBar(
-      items: <BottomNavigationBarItem>[
+      items: const <BottomNavigationBarItem>[
         BottomNavigationBarItem(
           icon: Icon(Icons.star_border), // Ícono de estrella
           label: '',
@@ -346,30 +293,46 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        resizeToAvoidBottomInset: false,
-        appBar: AppBar(
-          elevation: 0, // Sin sombra
-          backgroundColor: Colors.white, // Fondo blanco para el AppBar
-          automaticallyImplyLeading: false,
-          leading: Builder(
-            builder: (context) => IconButton(
-              icon: Icon(Icons.menu, color: Colors.black),
-              onPressed: () => Scaffold.of(context).openDrawer(), // Abre el Drawer
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      appBar: AppBar(
+        elevation: 0, // Sin sombra
+        backgroundColor: Colors.white, // Fondo blanco para el AppBar
+        automaticallyImplyLeading: false,
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: Icon(Icons.menu, color: Colors.black),
+            onPressed: () => Scaffold.of(context).openDrawer(), // Abre el Drawer
+          ),
+        ),
+        centerTitle: true, // Carita sonriente centrada
+        title: Icon(
+          Icons.sentiment_satisfied_alt, // Ícono de carita sonriente
+          color: Colors.black,
+          size: 28, // Tamaño ajustado al mockup
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.notifications_none, color: Colors.black),
+            onPressed: () {
+              print("Abrir notificaciones");
+            },
+          ),
+          GestureDetector(
+            onTap: () {
+              print("Perfil del usuario");
+            },
+            child: CircleAvatar(
+              radius: 15,
+              backgroundImage: NetworkImage(
+                  'https://randomuser.me/api/portraits/women/44.jpg'), // URL de la imagen de perfil
             ),
           ),
-          centerTitle: true, // Carita sonriente centrada
-          title: _smileIcon(), // Carita sonriente
-          actions: [
-            _notificationIcon(), // Ícono de notificaciones
-            _profileIcon(), // Ícono de perfil
-          ],
-        ),
-        drawer: _buildDrawer(), // Drawer como menú lateral
-        body: _widgetOptions.elementAt(_selectedIndex), // Contenido del body
-        bottomNavigationBar: _navigationBottom(), // Barra de navegación inferior
+        ],
       ),
+      drawer: _buildDrawer(), // Drawer como menú lateral
+      body: _widgetOptions.elementAt(_selectedIndex), // Contenido del body
+      bottomNavigationBar: _navigationBottom(), // Barra de navegación inferior
     );
   }
 }
