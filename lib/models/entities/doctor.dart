@@ -10,6 +10,12 @@ class Doctor {
   int especialidadId;
   int horarioId;
 
+  Doctor.empty()
+      : id = 0,
+        nombre = '',
+        especialidadId = 0,
+        horarioId = 0;
+
   Doctor({
     required this.id,
     required this.nombre,
@@ -30,4 +36,9 @@ class Doctor {
         "especialidadId": especialidadId,
         "horarioId": horarioId,
       };
+
+  @override
+  String toString() {
+    return 'Doctor -> id: $id, nombre: $nombre, especialidadId: $especialidadId, horarioId: $horarioId';
+  }
 }

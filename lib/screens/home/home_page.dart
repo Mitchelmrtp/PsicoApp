@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ulimagym/models/entities/Doctor.dart';
 import 'package:ulimagym/models/entities/Usuario.dart';
-import 'package:ulimagym/pages/exercise/exercise_page.dart';
-import 'package:ulimagym/pages/pantalla_inicio/inicio_initial_p.dart';
 import 'package:ulimagym/screens/Report/home_report_page.dart';
 import 'package:ulimagym/screens/home/prueba.dart';
 import 'package:ulimagym/screens/profile/doctor/doctor_page.dart';
@@ -94,6 +92,7 @@ class _HomePageState extends State<HomePage> {
   HomeController control = Get.put(HomeController());
   int _selectedIndex = 0;
   Usuario user;
+  int doctorId;  // Añadir doctorId aquí
 
   late final List<Widget> _widgetOptions;
 
@@ -101,14 +100,15 @@ class _HomePageState extends State<HomePage> {
   bool _agendaEnabled = false;
   bool _monitoringEnabled = true;
 
-  _HomePageState({required this.user}) {
+  _HomePageState({required this.user}) : doctorId = 1 { // Asignar doctorId desde el usuario logueado
     _widgetOptions = [
       HomeReportPage(user),
-      ExercisePage(),
       PruebaPage(),
-      DoctorPage(),
+      PruebaPage(),
+      DoctorProfilePage(doctorId: doctorId) // Usar el doctorId aquí
     ];
   }
+
 
   void _onItemTapped(int index) {
     setState(() {

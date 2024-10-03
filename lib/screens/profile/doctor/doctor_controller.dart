@@ -1,57 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ulimagym/models/entities/Doctor.dart';
-import 'package:ulimagym/services/doctor_service.dart';
+import '../../../models/entities/doctor.dart';
+import '../../../services/doctor_service.dart';
 
-class DoctorController extends GetxController {
+class DoctorProfileController extends GetxController {
+  Rx<Doctor?> doctor = Doctor.empty().obs;  // Doctor observable
   DoctorService doctorService = DoctorService();
-  var doctorsList = <Doctor>[].obs;
-  var doctor = Doctor(id: 0, nombre: '', especialidadId: 0, horarioId: 0).obs;
-  var isLoading = false.obs;
 
-  @override
-  void onInit() {
-    fetchDoctors();
-    super.onInit();
-  }
-
-  void fetchDoctors() async {
-    isLoading(true);
-    var doctors = await doctorService.getAllDoctors();
-    if (doctors != null) {
-      doctorsList.assignAll(doctors);
-    }
-    isLoading(false);
-  }
-
-  Future<void> createDoctor(BuildContext context, Doctor newDoctor) async {
-    var createdDoctor = await doctorService.createDoctor(newDoctor);
-    if (createdDoctor != null) {
-      doctorsList.add(createdDoctor);
-      Get.snackbar('Doctor creado', 'El doctor ha sido creado con éxito.');
-      Navigator.pop(context);
-    } else {
-      Get.snackbar('Error', 'No se pudo crear el doctor.');
+  // Método para obtener los datos del doctor
+  void loadDoctor(int id) async {
+    try {
+      Doctor? fetchedDoctor = await doctorService.getDoctorById(id);
+      if (fetchedDoctor != null) {
+        doctor.value = fetchedDoctor;
+        print('Datos del doctor cargados correctamente');
+      } else {
+        print('No se pudo obtener el perfil del doctor');
+      }
+    } catch (e) {
+      print('Error: $e');
     }
   }
 
-  Future<void> updateDoctor(int id, Doctor updatedDoctor) async {
-    var success = await doctorService.updateDoctor(id, updatedDoctor);
-    if (success) {
-      fetchDoctors();
-      Get.snackbar('Doctor actualizado', 'El doctor ha sido actualizado con éxito.');
-    } else {
-      Get.snackbar('Error', 'No se pudo actualizar el doctor.');
-    }
-  }
-
-  Future<void> deleteDoctor(int id) async {
-    var success = await doctorService.deleteDoctor(id);
-    if (success) {
-      doctorsList.removeWhere((doctor) => doctor.id == id);
-      Get.snackbar('Doctor eliminado', 'El doctor ha sido eliminado.');
-    } else {
-      Get.snackbar('Error', 'No se pudo eliminar el doctor.');
-    }
+  // Método para editar el perfil del doctor (Ejemplo)
+  void editDoctorProfile(BuildContext context) {
+    print("Editar perfil del doctor");
+    // Aquí podrías abrir una pantalla para editar el perfil
   }
 }
