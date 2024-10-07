@@ -19,7 +19,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   final TextEditingController dniController = TextEditingController();
   final TextEditingController correoController = TextEditingController();
   final TextEditingController celularController = TextEditingController();
-
+  final TextEditingController rolController = TextEditingController();
   @override
   void initState() {
     super.initState();
@@ -29,6 +29,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     dniController.text = widget.usuario.DNI;
     correoController.text = widget.usuario.correo;
     celularController.text = widget.usuario.numeroCelular;
+    rolController.text = widget.usuario.rol;
   }
 
   void _saveProfile() async {
@@ -42,6 +43,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         numeroCelular: celularController.text,
         contrasena: widget.usuario.contrasena, // No editable
         fechaNacimiento: widget.usuario.fechaNacimiento, // Mantener la fecha
+        rol: rolController.text,
       );
 
       var updatedUsuario = await UserService().updateUsuario(updatedUser);

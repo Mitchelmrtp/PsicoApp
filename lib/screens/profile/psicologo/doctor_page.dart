@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ulimagym/screens/profile/doctor/doctor_controller.dart';
+import 'package:ulimagym/screens/profile/psicologo/doctor_controller.dart';
 
 class DoctorProfilePage extends StatelessWidget {
   final DoctorProfileController controller = Get.put(DoctorProfileController());

@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ulimagym/models/entities/Usuario.dart';
 import 'package:ulimagym/screens/Report/home_report_page.dart';
-import 'package:ulimagym/screens/home/prueba.dart';
-import 'package:ulimagym/screens/profile/doctor/doctor_page.dart';
+import 'package:ulimagym/screens/Home_Paciente/prueba.dart';
+import 'package:ulimagym/screens/profile/psicologo/doctor_page.dart';
 import 'package:ulimagym/screens/profile/paciente/userprofile_page.dart';
-import 'home_controller.dart';
+import 'homepaciente_controller.dart';
 
 class ContactSpecialistPage extends StatelessWidget {
   @override
@@ -78,18 +78,18 @@ class ContactSpecialistPage extends StatelessWidget {
   }
 }
 
-class HomePage extends StatefulWidget {
+class HomePacientePage extends StatefulWidget {
   final Usuario usuarioLogged;
 
-  const HomePage({Key? key, required this.usuarioLogged}) : super(key: key);
+  const HomePacientePage({Key? key, required this.usuarioLogged}) : super(key: key);
 
   @override
-  _HomePageState createState() => _HomePageState(usuarioLogged: usuarioLogged);
+  _HomePacientePageState createState() => _HomePacientePageState(usuarioLogged: usuarioLogged);
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePacientePageState extends State<HomePacientePage> {
   final Usuario usuarioLogged;
-  HomeController control = Get.put(HomeController());
+  HomePacienteController control = Get.put(HomePacienteController());
   int _selectedIndex = 0;
 
   late final List<Widget> _widgetOptions;
@@ -98,7 +98,7 @@ class _HomePageState extends State<HomePage> {
   bool _agendaEnabled = false;
   bool _monitoringEnabled = true;
 
-  _HomePageState({required this.usuarioLogged});
+  _HomePacientePageState({required this.usuarioLogged});
 
   @override
   void initState() {

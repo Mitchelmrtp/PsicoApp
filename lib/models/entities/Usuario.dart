@@ -13,6 +13,7 @@ class Usuario {
   String numeroCelular;
   String contrasena;
   DateTime? fechaNacimiento;
+  String rol;
 
   // Constructor vacío para inicialización predeterminada
   Usuario.empty()
@@ -23,7 +24,8 @@ class Usuario {
         DNI = '',
         numeroCelular = '',
         contrasena = '',
-        fechaNacimiento = null;
+        fechaNacimiento = null,
+        rol = 'Paciente'; // Por defecto, 'Paciente'
 
   Usuario({
     required this.id,
@@ -34,6 +36,8 @@ class Usuario {
     required this.numeroCelular,
     required this.contrasena,
     this.fechaNacimiento,
+    required this.rol,
+
   });
 
   // Método copyWith para actualizar campos específicos
@@ -46,6 +50,7 @@ class Usuario {
     String? numeroCelular,
     String? contrasena,
     DateTime? fechaNacimiento,
+    String? rol,
   }) {
     return Usuario(
       id: id ?? this.id,
@@ -56,6 +61,7 @@ class Usuario {
       numeroCelular: numeroCelular ?? this.numeroCelular,
       contrasena: contrasena ?? this.contrasena,
       fechaNacimiento: fechaNacimiento ?? this.fechaNacimiento,
+      rol: rol ?? this.rol,
     );
   }
 
@@ -71,6 +77,7 @@ class Usuario {
         fechaNacimiento: json["fecha_nacimiento"] != null
             ? DateTime.parse(json["fecha_nacimiento"])
             : null,
+        rol: json["rol"], // Agregar el rol desde el JSON
       );
 
   // Método para convertir un objeto Usuario a JSON
@@ -83,10 +90,12 @@ class Usuario {
         "NumCelular": numeroCelular,
         "contrasena": contrasena,
         "fecha_nacimiento": fechaNacimiento?.toIso8601String(),
+        "rol": rol,  // Agregar el rol al JSON
+
       };
 
   @override
   String toString() {
-    return 'Usuario -> id: $id, nombre: $nombre, apellido: $apellido, correo: $correo, DNI: $DNI, numeroCelular: $numeroCelular, contrasena: $contrasena, fecha_nacimiento: $fechaNacimiento';
+    return 'Usuario -> id: $id, nombre: $nombre, apellido: $apellido, correo: $correo, DNI: $DNI, numeroCelular: $numeroCelular, contrasena: $contrasena, rol: $rol';
   }
 }

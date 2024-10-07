@@ -1,10 +1,10 @@
-import 'package:get/get.dart';
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:ulimagym/models/entities/Usuario.dart';
-import 'package:ulimagym/screens/Auth/Login/login_page.dart';
-import 'package:ulimagym/services/user_service.dart';
 import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:ulimagym/screens/Auth/Login/login_page.dart';
+import 'package:ulimagym/models/entities/Usuario.dart';
+import 'package:ulimagym/services/user_service.dart';
 
 class SignInController extends GetxController {
   // Controladores para los campos del formulario
@@ -49,7 +49,7 @@ class SignInController extends GetxController {
       messageColor.value = Colors.green;
 
       // Redirigir al login después de crear la cuenta
-      Future.delayed(Duration(seconds: 0), () {
+      Future.delayed(Duration(seconds: 2), () {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(

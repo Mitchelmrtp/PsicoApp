@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ulimagym/screens/Auth/Login/login_page.dart';
 
-class HomeController extends GetxController {
+class HomePsicologoController extends GetxController {
   // Definir el método goToSignIn para redirigir a la pantalla de inicio de sesión
   void goToLogIn(BuildContext context) {
     Navigator.pushReplacement(
