@@ -9,11 +9,12 @@ import 'dart:convert';
 class SignInController extends GetxController {
   // Controladores para los campos del formulario
   TextEditingController nombreController = TextEditingController();
+  TextEditingController apellidoController = TextEditingController();
   TextEditingController correoController = TextEditingController();
   TextEditingController dniController = TextEditingController();
-  TextEditingController tipoUsuarioController = TextEditingController();
   TextEditingController numeroCelularController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+  Rx<DateTime?> fechaNacimiento = Rx<DateTime?>(null);  // Fecha de nacimiento controlada
 
   RxString message = ''.obs;  // Mensaje de éxito o error
   var messageColor = Colors.white.obs;  // Color del mensaje
@@ -24,15 +25,24 @@ class SignInController extends GetxController {
 
   // Método para crear una cuenta nueva
   void createAccount(BuildContext context) async {
-    String nombreCompleto = nombreController.text;
+    String nombre = nombreController.text;
+    String apellido = apellidoController.text;
     String correo = correoController.text;
     String dni = dniController.text;
-    String tipoUsuario = tipoUsuarioController.text;
     String numeroCelular = numeroCelularController.text;
     String contrasena = passwordController.text;
+    DateTime? fechaNac = fechaNacimiento.value;
 
+    if (fechaNac == null) {
+      message.value = 'Por favor selecciona una fecha de nacimiento';
+      messageColor.value = Colors.red;
+      return;
+    }
+
+    // Llamamos al método de registro en UserService
     Usuario? userCreated = await userService.register(
-        nombreCompleto, correo, dni, tipoUsuario, numeroCelular, contrasena);
+      nombre, apellido, correo, dni, numeroCelular, contrasena, fechaNac
+    );
 
     if (userCreated != null) {
       message.value = 'Cuenta creada con éxito';
@@ -75,5 +85,18 @@ class SignInController extends GetxController {
       context,
       MaterialPageRoute(builder: (context) => LoginPage()),
     );
+  }
+
+  // Seleccionar la fecha de nacimiento
+  Future<void> selectDate(BuildContext context) async {
+    DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null && picked != fechaNacimiento.value) {
+      fechaNacimiento.value = picked;
+    }
   }
 }

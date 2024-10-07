@@ -6,10 +6,11 @@ class UsuarioProfileController extends GetxController {
 
   UsuarioProfileController(this.usuario);
 
-  // Método para actualizar la información del perfil, incluida la contraseña
-  void updateProfile(String nombreCompleto, String correo, String telefono, String? nuevaContrasena) {
+  // Método para actualizar la información del perfil
+  void updateProfile(String nombre, String apellido, String correo, String telefono, String? nuevaContrasena) {
     usuario.update((user) {
-      user?.nombreCompleto = nombreCompleto;
+      user?.nombre = nombre;
+      user?.apellido = apellido;
       user?.correo = correo;
       user?.numeroCelular = telefono;
       

@@ -15,6 +15,7 @@ class EditProfilePage extends StatefulWidget {
 class _EditProfilePageState extends State<EditProfilePage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController nombreController = TextEditingController();
+  final TextEditingController apellidoController = TextEditingController(); // Añadido
   final TextEditingController dniController = TextEditingController();
   final TextEditingController correoController = TextEditingController();
   final TextEditingController celularController = TextEditingController();
@@ -23,7 +24,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
   void initState() {
     super.initState();
     // Inicializar los controladores con los datos actuales del usuario
-    nombreController.text = widget.usuario.nombreCompleto;
+    nombreController.text = widget.usuario.nombre;
+    apellidoController.text = widget.usuario.apellido; // Añadido
     dniController.text = widget.usuario.DNI;
     correoController.text = widget.usuario.correo;
     celularController.text = widget.usuario.numeroCelular;
@@ -33,13 +35,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
     if (_formKey.currentState!.validate()) {
       Usuario updatedUser = Usuario(
         id: widget.usuario.id,
-        nombreCompleto: nombreController.text,
+        nombre: nombreController.text,
+        apellido: apellidoController.text, // Añadido
         correo: correoController.text,
         DNI: dniController.text,
-        tipoUsuario: widget.usuario.tipoUsuario, // No editable
         numeroCelular: celularController.text,
         contrasena: widget.usuario.contrasena, // No editable
-        admin: widget.usuario.admin, // No editable
+        fechaNacimiento: widget.usuario.fechaNacimiento, // Mantener la fecha
       );
 
       var updatedUsuario = await UserService().updateUsuario(updatedUser);
@@ -73,10 +75,20 @@ class _EditProfilePageState extends State<EditProfilePage> {
             children: <Widget>[
               TextFormField(
                 controller: nombreController,
-                decoration: InputDecoration(labelText: 'Nombre Completo'),
+                decoration: InputDecoration(labelText: 'Nombre'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Por favor ingresa un nombre válido';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: apellidoController, // Añadido
+                decoration: InputDecoration(labelText: 'Apellido'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Por favor ingresa un apellido válido';
                   }
                   return null;
                 },

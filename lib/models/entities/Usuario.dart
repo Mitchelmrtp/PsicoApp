@@ -6,82 +6,87 @@ String usuarioToJson(Usuario data) => json.encode(data.toJson());
 
 class Usuario {
   int id;
-  String nombreCompleto;
+  String nombre;
+  String apellido;
   String correo;
   String DNI;
-  String tipoUsuario;
   String numeroCelular;
   String contrasena;
-  bool admin;
+  DateTime? fechaNacimiento;
 
+  // Constructor vacío para inicialización predeterminada
   Usuario.empty()
       : id = 0,
-        nombreCompleto = '',
+        nombre = '',
+        apellido = '',
         correo = '',
         DNI = '',
-        tipoUsuario = '',
         numeroCelular = '',
         contrasena = '',
-        admin = false;
+        fechaNacimiento = null;
 
   Usuario({
     required this.id,
-    required this.nombreCompleto,
+    required this.nombre,
+    required this.apellido,
     required this.correo,
     required this.DNI,
-    required this.tipoUsuario,
     required this.numeroCelular,
     required this.contrasena,
-    required this.admin,
+    this.fechaNacimiento,
   });
 
   // Método copyWith para actualizar campos específicos
   Usuario copyWith({
     int? id,
-    String? nombreCompleto,
+    String? nombre,
+    String? apellido,
     String? correo,
     String? DNI,
-    String? tipoUsuario,
     String? numeroCelular,
     String? contrasena,
-    bool? admin,
+    DateTime? fechaNacimiento,
   }) {
     return Usuario(
       id: id ?? this.id,
-      nombreCompleto: nombreCompleto ?? this.nombreCompleto,
+      nombre: nombre ?? this.nombre,
+      apellido: apellido ?? this.apellido,
       correo: correo ?? this.correo,
       DNI: DNI ?? this.DNI,
-      tipoUsuario: tipoUsuario ?? this.tipoUsuario,
       numeroCelular: numeroCelular ?? this.numeroCelular,
       contrasena: contrasena ?? this.contrasena,
-      admin: admin ?? this.admin,
+      fechaNacimiento: fechaNacimiento ?? this.fechaNacimiento,
     );
   }
 
+  // Método para crear un objeto Usuario desde JSON
   factory Usuario.fromJson(Map<String, dynamic> json) => Usuario(
-        id: json["id"],
-        nombreCompleto: json["nombreCompleto"],
+        id: json["id_usuario"],
+        nombre: json["nombre"],
+        apellido: json["apellido"],
         correo: json["correo"],
         DNI: json["DNI"],
-        tipoUsuario: json["tipoUsuario"],
-        numeroCelular: json["numeroCelular"],
+        numeroCelular: json["NumCelular"],
         contrasena: json["contrasena"],
-        admin: json["Admin"],
+        fechaNacimiento: json["fecha_nacimiento"] != null
+            ? DateTime.parse(json["fecha_nacimiento"])
+            : null,
       );
 
+  // Método para convertir un objeto Usuario a JSON
   Map<String, dynamic> toJson() => {
-        "id": id,
-        "nombreCompleto": nombreCompleto,
+        "id_usuario": id,
+        "nombre": nombre,
+        "apellido": apellido,
         "correo": correo,
         "DNI": DNI,
-        "tipoUsuario": tipoUsuario,
-        "numeroCelular": numeroCelular,
+        "NumCelular": numeroCelular,
         "contrasena": contrasena,
-        "Admin": admin,
+        "fecha_nacimiento": fechaNacimiento?.toIso8601String(),
       };
 
   @override
   String toString() {
-    return 'Usuario -> id: $id, nombreCompleto: $nombreCompleto, correo: $correo, DNI: $DNI, tipoUsuario: $tipoUsuario, numeroCelular: $numeroCelular, contrasena: $contrasena, admin: $admin';
+    return 'Usuario -> id: $id, nombre: $nombre, apellido: $apellido, correo: $correo, DNI: $DNI, numeroCelular: $numeroCelular, contrasena: $contrasena, fecha_nacimiento: $fechaNacimiento';
   }
 }

@@ -76,12 +76,13 @@ class SignInPage extends StatelessWidget {
       ),
       child: Column(
         children: [
-          _buildTextField("Nombre(s)", control.nombreController),
+          _buildTextField("Nombre", control.nombreController),
+          _buildTextField("Apellido", control.apellidoController),
           _buildTextField("Correo", control.correoController),
           _buildTextField("DNI", control.dniController),
-          _buildTextField("Tipo de usuario", control.tipoUsuarioController),
           _buildTextField("Número de celular", control.numeroCelularController),
           _buildTextField("Contraseña", control.passwordController),
+          _buildDateField(context),  // Campo para la fecha de nacimiento
         ],
       ),
     );
@@ -110,6 +111,37 @@ class SignInPage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  // Widget para seleccionar la fecha de nacimiento
+  Widget _buildDateField(BuildContext context) {
+    return Obx(() => GestureDetector(
+      onTap: () => control.selectDate(context),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Container(
+          width: 250,
+          child: InputDecorator(
+            decoration: InputDecoration(
+              labelText: 'Fecha de Nacimiento',
+              labelStyle: TextStyle(color: Colors.grey),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: const Color.fromRGBO(53, 68, 122, 1), width: 2),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: const Color.fromRGBO(252, 201, 180, 1), width: 3),
+              ),
+            ),
+            child: Text(
+              control.fechaNacimiento.value != null
+                  ? "${control.fechaNacimiento.value!.toLocal()}".split(' ')[0]
+                  : "Seleccionar Fecha",
+              style: TextStyle(color: Colors.black),
+            ),
+          ),
+        ),
+      ),
+    ));
   }
 
   // Widget para construir los términos y condiciones

@@ -44,7 +44,8 @@ class UserService {
     // Si se sube una imagen, utilizamos Multipart para enviar tanto los datos del usuario como la imagen
     if (imagePath != null && imagePath.isNotEmpty) {
       var request = http.MultipartRequest('PUT', Uri.parse(url));
-      request.fields['nombreCompleto'] = usuario.nombreCompleto;
+      request.fields['nombre'] = usuario.nombre;
+      request.fields['apellido'] = usuario.apellido;
       request.fields['correo'] = usuario.correo;
       request.fields['numeroCelular'] = usuario.numeroCelular;
       request.fields['DNI'] = usuario.DNI;
@@ -74,7 +75,8 @@ class UserService {
           Uri.parse(url),
           headers: {"Content-Type": "application/json"},
           body: jsonEncode({
-            "nombreCompleto": usuario.nombreCompleto,
+            "nombre": usuario.nombre,
+            "apellido": usuario.apellido,
             "correo": usuario.correo,
             "numeroCelular": usuario.numeroCelular,
             "DNI": usuario.DNI,
@@ -96,9 +98,10 @@ class UserService {
     }
   }
 
-  Future<Usuario?> register(
-      String nombreCompleto, String correo, String dni, String tipoUsuario,
-      String numeroCelular, String contrasena) async {
+ Future<Usuario?> register(
+    String nombre, String apellido, String correo, String dni,
+    String numeroCelular, String contrasena, DateTime fechaNacimiento) async {
+
     String url = "${BASE_URL}usuarios";  // Ruta de creación de usuario
 
     try {
@@ -107,13 +110,13 @@ class UserService {
         Uri.parse(url),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
-          "nombreCompleto": nombreCompleto,
+          "nombre": nombre,
+          "apellido": apellido,
           "correo": correo,
           "DNI": dni,
-          "tipoUsuario": tipoUsuario,
-          "numeroCelular": numeroCelular,
+          "NumCelular": numeroCelular,
           "contrasena": contrasena,
-          "Admin": false  // Por defecto, no es administrador
+          "fecha_nacimiento": fechaNacimiento.toIso8601String(),  // Formato ISO8601 para fechas
         }),
       );
 
@@ -123,6 +126,7 @@ class UserService {
         return usuario;
       } else {
         print('Error de registro: ${response.statusCode}');
+        print('Cuerpo de la respuesta: ${response.body}');
         return null;
       }
     } catch (e) {
@@ -130,6 +134,7 @@ class UserService {
       return null;
     }
   }
+
 
   Future<String?> reset(String dni, String email) async {
     String url = "${BASE_URL}user/reset";

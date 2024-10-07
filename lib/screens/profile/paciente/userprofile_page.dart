@@ -99,7 +99,7 @@ class _UsuarioProfilePageState extends State<UsuarioProfilePage> {
             SizedBox(height: 20),
             // Nombre del usuario, más grande y centrado
             Text(
-              usuario.nombreCompleto,
+              '${usuario.nombre} ${usuario.apellido}', // Cambiado para incluir nombre y apellido
               style: TextStyle(
                 fontSize: 22,
                 color: Colors.white,
