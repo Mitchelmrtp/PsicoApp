@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ulimagym/screens/Auth/Recover/recover_page.dart';
 import 'package:ulimagym/screens/Auth/Signin/signin_page.dart';
-import 'package:ulimagym/screens/Home_Paciente/homepaciente_page.dart';
+import 'package:ulimagym/screens/Home/Home_Paciente/homepaciente_page.dart';
 import 'package:ulimagym/models/entities/Usuario.dart';
-import 'package:ulimagym/screens/Home_Psicologo/homepsicologo_page.dart';
+import 'package:ulimagym/screens/Home/Home_Psicologo/homepsicologo_page.dart';
 import 'package:ulimagym/services/user_service.dart';
 
 class LoginController extends GetxController {

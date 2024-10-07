@@ -98,41 +98,49 @@ class UserService {
     }
   }
 
- Future<Usuario?> register(
-  String nombre, String apellido, String correo, String dni,
-  String numeroCelular, String contrasena, DateTime fechaNacimiento) async {
+Future<Usuario?> register(
+    String nombre,
+    String apellido,
+    String correo,
+    String dni,
+    String numeroCelular,
+    String contrasena,
+    DateTime fechaNacimiento,
+    String rol, {
+    String? especialidad,
+  }) async {
+    String url = "${BASE_URL}usuarios"; // Ruta de creación de usuario
 
-  String url = "${BASE_URL}usuarios";  // Ruta de creación de usuario
+    try {
+      var response = await http.post(
+        Uri.parse(url),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
+          "nombre": nombre,
+          "apellido": apellido,
+          "correo": correo,
+          "DNI": dni,
+          "NumCelular": numeroCelular,
+          "contrasena": contrasena,
+          "fecha_nacimiento": fechaNacimiento.toIso8601String(),
+          "rol": rol,
+          if (especialidad != null) "especialidad": especialidad, // Solo si es Psicólogo
+        }),
+      );
 
-  try {
-    var response = await http.post(
-      Uri.parse(url),
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode({
-        "nombre": nombre,
-        "apellido": apellido,
-        "correo": correo,
-        "DNI": dni,
-        "NumCelular": numeroCelular,
-        "contrasena": contrasena,
-        "fecha_nacimiento": fechaNacimiento.toIso8601String(),  // Formato ISO8601 para fechas
-      }),
-    );
-
-    if (response.statusCode == 201) {
-      var responseBody = json.decode(response.body);
-      final Usuario usuario = Usuario.fromJson(responseBody);  // Convertimos el JSON a un objeto Usuario
-      return usuario;
-    } else {
-      print('Error de registro: ${response.statusCode}');
-      print('Cuerpo de la respuesta: ${response.body}');
+      if (response.statusCode == 201) {
+        var responseBody = json.decode(response.body);
+        return Usuario.fromJson(responseBody);
+      } else {
+        print('Error de registro: ${response.statusCode}');
+        return null;
+      }
+    } catch (e) {
+      print('Error inesperado: $e');
       return null;
     }
-  } catch (e) {
-    print('Error no esperado: $e');
-    return null;
   }
-}
+
 
 
   Future<String?> reset(String dni, String email) async {

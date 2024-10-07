@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ulimagym/models/entities/Usuario.dart';
 import 'package:ulimagym/screens/Report/home_report_page.dart';
-import 'package:ulimagym/screens/Home_Paciente/prueba.dart';
+import 'package:ulimagym/screens/Home/Home_Paciente/prueba.dart';
 import 'package:ulimagym/screens/profile/psicologo/doctor_page.dart';
 import 'package:ulimagym/screens/profile/paciente/userprofile_page.dart';
-import 'homepaciente_controller.dart';
+import 'homepsicologo_controller.dart';
 
 class ContactSpecialistPage extends StatelessWidget {
   @override
@@ -78,18 +78,18 @@ class ContactSpecialistPage extends StatelessWidget {
   }
 }
 
-class HomePacientePage extends StatefulWidget {
+class HomePsicologoPage extends StatefulWidget {
   final Usuario usuarioLogged;
 
-  const HomePacientePage({Key? key, required this.usuarioLogged}) : super(key: key);
+  const HomePsicologoPage({Key? key, required this.usuarioLogged}) : super(key: key);
 
   @override
-  _HomePacientePageState createState() => _HomePacientePageState(usuarioLogged: usuarioLogged);
+  _HomePsicologoPageState createState() => _HomePsicologoPageState(usuarioLogged: usuarioLogged);
 }
 
-class _HomePacientePageState extends State<HomePacientePage> {
+class _HomePsicologoPageState extends State<HomePsicologoPage> {
   final Usuario usuarioLogged;
-  HomePacienteController control = Get.put(HomePacienteController());
+  HomePsicologoController control = Get.put(HomePsicologoController());
   int _selectedIndex = 0;
 
   late final List<Widget> _widgetOptions;
@@ -98,7 +98,7 @@ class _HomePacientePageState extends State<HomePacientePage> {
   bool _agendaEnabled = false;
   bool _monitoringEnabled = true;
 
-  _HomePacientePageState({required this.usuarioLogged});
+  _HomePsicologoPageState({required this.usuarioLogged});
 
   @override
   void initState() {
@@ -271,7 +271,7 @@ class _HomePacientePageState extends State<HomePacientePage> {
           label: '',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.photo_camera_outlined), // Ícono de cámara
+          icon: Icon(Icons.access_alarms_rounded), // Ícono de cámara
           label: '',
         ),
         BottomNavigationBarItem(

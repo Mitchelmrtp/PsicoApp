@@ -7,9 +7,9 @@ class SignInPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    control.getTerms();  // Cargar los términos y condiciones
+    control.getTerms(); // Cargar los términos y condiciones
     return Scaffold(
-      backgroundColor: Color.fromRGBO(53, 68, 122, 1),  // Color de fondo azul
+      backgroundColor: Color.fromRGBO(53, 68, 122, 1), // Color de fondo azul
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -22,15 +22,15 @@ class SignInPage extends StatelessWidget {
                 SizedBox(height: 30),
                 _buildTermsAndConditions(context), // Términos y condiciones
                 SizedBox(height: 30),
-                _buildRegisterButton(context),  // Botón para registrarse
+                _buildRegisterButton(context), // Botón para registrarse
                 SizedBox(height: 20),
                 // Mensaje en caso de éxito o error
                 Obx(() => Text(
-                      control.message.value,
-                      style: TextStyle(
-                        color: control.messageColor.value,
-                      ),
-                    )),
+                  control.message.value,
+                  style: TextStyle(
+                    color: control.messageColor.value,
+                  ),
+                )),
               ],
             ),
           ),
@@ -55,7 +55,7 @@ class SignInPage extends StatelessWidget {
           child: AspectRatio(
             aspectRatio: 1,
             child: Image.asset(
-              'assets/images/logo.png',  // Cambia esto según la ruta de tu logo
+              'assets/images/logo.png', // Cambia esto según la ruta de tu logo
               fit: BoxFit.contain,
             ),
           ),
@@ -71,43 +71,52 @@ class SignInPage extends StatelessWidget {
       width: 325,
       padding: EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: Colors.white,  // Color de fondo del formulario
-        borderRadius: BorderRadius.circular(48),  // Bordes redondeados
+        color: Colors.white, // Color de fondo del formulario
+        borderRadius: BorderRadius.circular(48), // Bordes redondeados
       ),
       child: Column(
         children: [
           _buildTextField("Nombre", control.nombreController),
           _buildTextField("Apellido", control.apellidoController),
-          _buildTextField("Correo", control.correoController),
+          _buildTextField("Correo", control.correoController, onChanged: (value) {
+            control.checkCorreoForEspecialidad(); // Verificar si el correo contiene el dominio correcto
+          }),
           _buildTextField("DNI", control.dniController),
           _buildTextField("Número de celular", control.numeroCelularController),
           _buildTextField("Contraseña", control.passwordController),
-          _buildDateField(context),  // Campo para la fecha de nacimiento
+          _buildDateField(context), // Campo para la fecha de nacimiento
+          Obx(() {
+            // Mostrar el campo de especialidad si es psicólogo
+            return control.showEspecialidadField.value
+                ? _buildTextField("Especialidad", control.especialidadController)
+                : SizedBox.shrink();
+          }),
         ],
       ),
     );
   }
 
   // Widget para construir los campos de texto
-  Widget _buildTextField(String label, TextEditingController controller) {
+  Widget _buildTextField(String label, TextEditingController controller, {Function(String)? onChanged}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Container(
-        width: 250,  // Controlamos el ancho del input
+        width: 250, // Controlamos el ancho del input
         child: TextField(
           controller: controller,
+          onChanged: onChanged, // Si se proporciona, llama a la función onChanged cuando el texto cambie
           decoration: InputDecoration(
             labelText: label,
-            labelStyle: TextStyle(color: Colors.grey),  // Color del texto de la etiqueta
+            labelStyle: TextStyle(color: Colors.grey), // Color del texto de la etiqueta
             enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: const Color.fromRGBO(53, 68, 122, 1), width: 2),  // Color de la línea cuando no está enfocado
+              borderSide: BorderSide(color: const Color.fromRGBO(53, 68, 122, 1), width: 2), // Color de la línea cuando no está enfocado
             ),
             focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: const Color.fromRGBO(252, 201, 180, 1), width: 3),  // Color de la línea al enfocar
+              borderSide: BorderSide(color: const Color.fromRGBO(252, 201, 180, 1), width: 3), // Color de la línea al enfocar
             ),
-            contentPadding: EdgeInsets.symmetric(vertical: 4, horizontal: 0),  // Reducir el padding vertical
+            contentPadding: EdgeInsets.symmetric(vertical: 4, horizontal: 0), // Reducir el padding vertical
           ),
-          style: TextStyle(color: Colors.black),  // Color del texto de entrada
+          style: TextStyle(color: Colors.black), // Color del texto de entrada
         ),
       ),
     );
@@ -147,45 +156,45 @@ class SignInPage extends StatelessWidget {
   // Widget para construir los términos y condiciones
   Widget _buildTermsAndConditions(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.start,  // Alineación del checkbox
+      mainAxisAlignment: MainAxisAlignment.start, // Alineación del checkbox
       children: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.center,  // Alinear checkbox y texto en el centro
+          mainAxisAlignment: MainAxisAlignment.center, // Alinear checkbox y texto en el centro
           children: [
             // Checkbox personalizado
             Obx(() => GestureDetector(
-                  onTap: () {
-                    // Cambiar el valor del checkbox
-                    control.termsCheck.value = !control.termsCheck.value;
-                  },
-                  child: Container(
-                    width: 24,
-                    height: 24,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: Colors.white,  // Color del borde del checkbox
-                        width: 2,
-                      ),
-                    ),
-                    child: Center(
-                      child: control.termsCheck.value
-                          ? Container(
-                              width: 12,
-                              height: 12,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: Color(0xFFFFCC9B4),  // Color interno del círculo al presionar
-                              ),
-                            )
-                          : null,  // No mostrar nada si no está presionado
-                    ),
+              onTap: () {
+                // Cambiar el valor del checkbox
+                control.termsCheck.value = !control.termsCheck.value;
+              },
+              child: Container(
+                width: 24,
+                height: 24,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Colors.white, // Color del borde del checkbox
+                    width: 2,
                   ),
-                )),
-            SizedBox(width: 10),  // Espacio entre el checkbox y el texto
+                ),
+                child: Center(
+                  child: control.termsCheck.value
+                      ? Container(
+                          width: 12,
+                          height: 12,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Color(0xFFFFCC9B4), // Color interno del círculo al presionar
+                          ),
+                        )
+                      : null, // No mostrar nada si no está presionado
+                ),
+              ),
+            )),
+            SizedBox(width: 10), // Espacio entre el checkbox y el texto
             GestureDetector(
               onTap: () {
-                _showBottomSheet(context);  // Mostrar los términos y condiciones
+                _showBottomSheet(context); // Mostrar los términos y condiciones
               },
               child: RichText(
                 text: TextSpan(
@@ -274,27 +283,27 @@ class SignInPage extends StatelessWidget {
   // Widget para construir el botón de "Registrarse"
   Widget _buildRegisterButton(BuildContext context) {
     return Obx(() => SizedBox(
-          width: 200,  // Ancho del botón
-          height: 50,  // Altura del botón
-          child: ElevatedButton(
-            onPressed: control.termsCheck.value
-                ? () => control.createAccount(context)
-                : null,
-            style: ElevatedButton.styleFrom(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(48),
-                side: BorderSide(color: Colors.lightBlueAccent, width: 2),
-              ),
-              backgroundColor: Colors.transparent,
-            ),
-            child: Text(
-              "Registrarse",
-              style: TextStyle(
-                fontSize: 18,  // Tamaño de la fuente
-                color: Colors.lightBlueAccent,
-              ),
-            ),
+      width: 200, // Ancho del botón
+      height: 50, // Altura del botón
+      child: ElevatedButton(
+        onPressed: control.termsCheck.value
+            ? () => control.createAccount(context)
+            : null,
+        style: ElevatedButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(48),
+            side: BorderSide(color: Colors.lightBlueAccent, width: 2),
           ),
-        ));
+          backgroundColor: Colors.transparent,
+        ),
+        child: Text(
+          "Registrarse",
+          style: TextStyle(
+            fontSize: 18, // Tamaño de la fuente
+            color: Colors.lightBlueAccent,
+          ),
+        ),
+      ),
+    ));
   }
 }

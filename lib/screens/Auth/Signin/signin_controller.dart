@@ -1,10 +1,11 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ulimagym/screens/Auth/Login/login_page.dart';
+import 'package:http/http.dart' as http;
 import 'package:ulimagym/models/entities/Usuario.dart';
+import 'package:ulimagym/screens/Auth/Login/login_page.dart';
 import 'package:ulimagym/services/user_service.dart';
+import 'package:ulimagym/services/especialista_service.dart';
+import 'dart:convert';
 
 class SignInController extends GetxController {
   // Controladores para los campos del formulario
@@ -14,77 +15,61 @@ class SignInController extends GetxController {
   TextEditingController dniController = TextEditingController();
   TextEditingController numeroCelularController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-  Rx<DateTime?> fechaNacimiento = Rx<DateTime?>(null);  // Fecha de nacimiento controlada
+  TextEditingController especialidadController = TextEditingController(); // Controlador para la especialidad
+  Rx<DateTime?> fechaNacimiento = Rx<DateTime?>(null);  // Fecha de nacimiento
 
-  RxString message = ''.obs;  // Mensaje de éxito o error
+  RxString message = ''.obs;  // Mensaje para mostrar en la UI
   var messageColor = Colors.white.obs;  // Color del mensaje
   RxBool termsCheck = false.obs;  // Estado del checkbox de términos y condiciones
-  RxString markdownData = ''.obs;  // Contenido de los términos y condiciones en Markdown
+  RxBool showEspecialidadField = false.obs;  // Mostrar/ocultar el campo de especialidad
+  RxString markdownData = ''.obs;  // Datos del markdown para términos y condiciones
 
-  UserService userService = UserService();  // Servicio de usuario para manejar la API
+  UserService userService = UserService();  // Servicio para gestionar usuarios
+  EspecialistaService especialistaService = EspecialistaService();  // Servicio para gestionar especialistas
+
+  // Verificar si el correo contiene el dominio @validamente.cpi.com
+  void checkCorreoForEspecialidad() {
+    if (correoController.text.endsWith('@validamente.cpi.com')) {
+      showEspecialidadField.value = true;
+    } else {
+      showEspecialidadField.value = false;
+    }
+  }
 
   // Método para crear una cuenta nueva
   void createAccount(BuildContext context) async {
-    String nombre = nombreController.text;
-    String apellido = apellidoController.text;
-    String correo = correoController.text;
-    String dni = dniController.text;
-    String numeroCelular = numeroCelularController.text;
-    String contrasena = passwordController.text;
-    DateTime? fechaNac = fechaNacimiento.value;
+    String rol = showEspecialidadField.value ? 'Psicologo' : 'Paciente';
 
-    if (fechaNac == null) {
-      message.value = 'Por favor selecciona una fecha de nacimiento';
-      messageColor.value = Colors.red;
-      return;
-    }
-
-    // Llamamos al método de registro en UserService
+    // Crear usuario en el backend
     Usuario? userCreated = await userService.register(
-      nombre, apellido, correo, dni, numeroCelular, contrasena, fechaNac
+      nombreController.text,
+      apellidoController.text,
+      correoController.text,
+      dniController.text,
+      numeroCelularController.text,
+      passwordController.text,
+      fechaNacimiento.value!,
+      rol,
     );
 
     if (userCreated != null) {
-      message.value = 'Cuenta creada con éxito';
-      messageColor.value = Colors.green;
+      // Si el rol es 'Psicologo', crear el especialista
+      if (rol == 'Psicologo') {
+        await especialistaService.createEspecialista(
+            especialidadController.text, userCreated.id);
+      }
 
-      // Redirigir al login después de crear la cuenta
-      Future.delayed(Duration(seconds: 2), () {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => LoginPage(),
-          ),
-        );
-      });
+      // Redirigir al login después de la creación
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LoginPage(),
+        ),
+      );
     } else {
       message.value = 'Error al crear la cuenta';
       messageColor.value = Colors.red;
     }
-  }
-
-  // Cargar los términos y condiciones desde un archivo Markdown
-  Future<void> getTerms() async {
-    final response = await http.get(Uri.parse(
-        'https://raw.githubusercontent.com/mukeshsolanki/MarkdownView-Android/main/README.md'));  // Ruta de ejemplo, debes cambiarla por la que necesites
-    if (response.statusCode == 200) {
-      markdownData.value = response.body;  // Asignar el contenido Markdown al observable
-    } else {
-      markdownData.value = 'Error al cargar términos y condiciones';
-    }
-  }
-
-  // Aceptar los términos y condiciones
-  void acceptTerms() {
-    termsCheck.value = true;
-  }
-
-  // Función para redirigir al login
-  void goToLogin(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => LoginPage()),
-    );
   }
 
   // Seleccionar la fecha de nacimiento
@@ -98,5 +83,21 @@ class SignInController extends GetxController {
     if (picked != null && picked != fechaNacimiento.value) {
       fechaNacimiento.value = picked;
     }
+  }
+
+  // Obtener términos y condiciones desde un archivo Markdown
+  Future<void> getTerms() async {
+    final response = await http.get(Uri.parse(
+        'https://raw.githubusercontent.com/mukeshsolanki/MarkdownView-Android/main/README.md')); // Ruta de ejemplo, debes cambiarla por la que necesites
+    if (response.statusCode == 200) {
+      markdownData.value = response.body; // Asignar el contenido Markdown al observable
+    } else {
+      markdownData.value = 'Error al cargar términos y condiciones';
+    }
+  }
+
+  // Aceptar los términos y condiciones
+  void acceptTerms() {
+    termsCheck.value = true;
   }
 }

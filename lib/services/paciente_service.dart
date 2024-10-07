@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:ulimagym/configs/constants.dart';
-import '../models/paciente.dart';
+import '../models/entities/paciente.dart';
 
 class PacienteService {
   Future<Paciente?> getPacienteById(int id) async {
