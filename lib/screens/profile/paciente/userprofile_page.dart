@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:ulimagym/models/entities/Usuario.dart';
 import 'package:ulimagym/screens/profile/paciente/edituserprofile.dart';
 
