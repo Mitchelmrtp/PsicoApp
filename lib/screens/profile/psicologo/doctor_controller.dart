@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../models/entities/doctor.dart';
+import '../../../models/doctor.dart';
 import '../../../services/doctor_service.dart';
 
 class DoctorProfileController extends GetxController {

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ulimagym/models/entities/Usuario.dart';
-import 'package:ulimagym/screens/Report/home_report_page.dart';
-import 'package:ulimagym/screens/Home/Home_Paciente/prueba.dart';
-import 'package:ulimagym/screens/profile/psicologo/doctor_page.dart';
-import 'package:ulimagym/screens/profile/paciente/userprofile_page.dart';
+import 'package:psicoapp/models/Usuario.dart';
+import 'package:psicoapp/screens/Solicitar_Cita/Solicitar_Cita_page.dart';
+import 'package:psicoapp/screens/Home/Home_Paciente/prueba.dart';
+import 'package:psicoapp/screens/profile/psicologo/doctor_page.dart';
+import 'package:psicoapp/screens/profile/paciente/userprofile_page.dart';
 import 'homepaciente_controller.dart';
 
 class ContactSpecialistPage extends StatelessWidget {
@@ -105,7 +105,7 @@ class _HomePacientePageState extends State<HomePacientePage> {
     super.initState();
     // Definir las pantallas a mostrar en el BottomNavigationBar
     _widgetOptions = [
-      HomeReportPage(usuarioLogged),
+      SolicitarCitaPage(usuarioLogged),
       PruebaPage(),
       UsuarioProfilePage(usuario: usuarioLogged), // Perfil del usuario logueado
       DoctorProfilePage(doctorId: usuarioLogged.id) // Se asume que el id del usuario es el del doctor en este caso

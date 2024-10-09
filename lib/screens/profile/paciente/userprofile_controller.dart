@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:ulimagym/models/entities/Usuario.dart';
+import 'package:psicoapp/models/Usuario.dart';
 
 class UsuarioProfileController extends GetxController {
   final Rx<Usuario> usuario;

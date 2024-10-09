@@ -1,4 +1,4 @@
-package com.example.ulimagym
+package com.example.psicoapp
 
 import io.flutter.embedding.android.FlutterActivity
 

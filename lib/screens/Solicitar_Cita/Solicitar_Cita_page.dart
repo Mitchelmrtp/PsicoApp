@@ -2,15 +2,16 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'home_report_controller.dart';
-import '../../models/entities/Usuario.dart'; // Importa el modelo de Usuario
+import 'package:psicoapp/models/Usuario.dart';
+import 'package:psicoapp/screens/Solicitar_Cita/Solicitar_Cita_controller.dart';
+ // Importa el modelo de Usuario
 
-class HomeReportPage extends StatelessWidget {
-  final HomeReportController control = Get.put(HomeReportController());
+class SolicitarCitaPage extends StatelessWidget {
+  final SolicitarCitaController control = Get.put(SolicitarCitaController());
   final Usuario usuarioLogged; // Declaración de la variable usuario
 
   // Constructor que recibe el usuario
-  HomeReportPage(this.usuarioLogged) {
+  SolicitarCitaPage(this.usuarioLogged) {
     control.user = usuarioLogged; // Asignar el usuario al controlador
   }
 
@@ -217,15 +218,16 @@ SizedBox(height: 24),
             Spacer(),
             Center(
               child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black, // Fondo negro para el botón
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
                   ),
+                  onPressed: () => control.selectDateTime(context), // Llamar a la selección de fecha, hora y motivo
+                  child: Text('Reservar Cita'),
                 ),
-                onPressed: () => control.selectDateTime(context),
-                child: Text('Reservar Cita'),
-              ),
+
             ),
           ],
         ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:ulimagym/services/user_service.dart';
+import 'package:psicoapp/services/user_service.dart';
 
 class RecoverController extends GetxController {
   TextEditingController emailController = TextEditingController();

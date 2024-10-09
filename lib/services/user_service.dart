@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:ulimagym/configs/constants.dart';
-import '../models/entities/Usuario.dart';
+import 'package:psicoapp/configs/constants.dart';
+import '../models/Usuario.dart';
 
 class UserService {
   Future<Usuario?> validate(String email, String password) async {
@@ -107,9 +107,9 @@ Future<Usuario?> register(
     String contrasena,
     DateTime fechaNacimiento,
     String rol, {
-    String? especialidad,
+    String? especialidad,  // Parámetro opcional
   }) async {
-    String url = "${BASE_URL}usuarios"; // Ruta de creación de usuario
+    String url = "${BASE_URL}usuarios";  // Ruta para crear un usuario
 
     try {
       var response = await http.post(
@@ -124,7 +124,7 @@ Future<Usuario?> register(
           "contrasena": contrasena,
           "fecha_nacimiento": fechaNacimiento.toIso8601String(),
           "rol": rol,
-          if (especialidad != null) "especialidad": especialidad, // Solo si es Psicólogo
+          if (especialidad != null) "especialidad": especialidad,  // Enviar especialidad solo si es psicólogo
         }),
       );
 

@@ -1,0 +1,808 @@
+
+Usuario.dart:
+(
+import 'dart:convert';
+
+Usuario usuarioFromJson(String str) => Usuario.fromJson(json.decode(str));
+
+String usuarioToJson(Usuario data) => json.encode(data.toJson());
+
+class Usuario {
+  int id;
+  String nombre;
+  String apellido;
+  String correo;
+  String DNI;
+  String numeroCelular;
+  String contrasena;
+  DateTime? fechaNacimiento;
+  String rol;
+
+  // Constructor vacío para inicialización predeterminada
+  Usuario.empty()
+      : id = 0,
+        nombre = '',
+        apellido = '',
+        correo = '',
+        DNI = '',
+        numeroCelular = '',
+        contrasena = '',
+        fechaNacimiento = null,
+        rol = 'Paciente'; // Por defecto, 'Paciente'
+
+  Usuario({
+    required this.id,
+    required this.nombre,
+    required this.apellido,
+    required this.correo,
+    required this.DNI,
+    required this.numeroCelular,
+    required this.contrasena,
+    this.fechaNacimiento,
+    required this.rol,
+
+  });
+
+  // Método copyWith para actualizar campos específicos
+  Usuario copyWith({
+    int? id,
+    String? nombre,
+    String? apellido,
+    String? correo,
+    String? DNI,
+    String? numeroCelular,
+    String? contrasena,
+    DateTime? fechaNacimiento,
+    String? rol,
+  }) {
+    return Usuario(
+      id: id ?? this.id,
+      nombre: nombre ?? this.nombre,
+      apellido: apellido ?? this.apellido,
+      correo: correo ?? this.correo,
+      DNI: DNI ?? this.DNI,
+      numeroCelular: numeroCelular ?? this.numeroCelular,
+      contrasena: contrasena ?? this.contrasena,
+      fechaNacimiento: fechaNacimiento ?? this.fechaNacimiento,
+      rol: rol ?? this.rol,
+    );
+  }
+
+  // Método para crear un objeto Usuario desde JSON
+  factory Usuario.fromJson(Map<String, dynamic> json) => Usuario(
+        id: json["id_usuario"],
+        nombre: json["nombre"],
+        apellido: json["apellido"],
+        correo: json["correo"],
+        DNI: json["DNI"],
+        numeroCelular: json["NumCelular"],
+        contrasena: json["contrasena"],
+        fechaNacimiento: json["fecha_nacimiento"] != null
+            ? DateTime.parse(json["fecha_nacimiento"])
+            : null,
+        rol: json["rol"], // Agregar el rol desde el JSON
+      );
+
+  // Método para convertir un objeto Usuario a JSON
+  Map<String, dynamic> toJson() => {
+        "id_usuario": id,
+        "nombre": nombre,
+        "apellido": apellido,
+        "correo": correo,
+        "DNI": DNI,
+        "NumCelular": numeroCelular,
+        "contrasena": contrasena,
+        "fecha_nacimiento": fechaNacimiento?.toIso8601String(),
+        "rol": rol,  // Agregar el rol al JSON
+
+      };
+
+  @override
+  String toString() {
+    return 'Usuario -> id: $id, nombre: $nombre, apellido: $apellido, correo: $correo, DNI: $DNI, numeroCelular: $numeroCelular, contrasena: $contrasena, rol: $rol';
+  }
+}
+
+)
+
+especialista.dart:
+(
+import 'dart:convert';
+
+Especialista especialistaFromJson(String str) => Especialista.fromJson(json.decode(str));
+
+String especialistaToJson(Especialista data) => json.encode(data.toJson());
+
+class Especialista {
+  int id;
+  String especialidad;
+  int psicologoGeneralId;
+
+  // Constructor vacío para inicialización predeterminada
+  Especialista.empty()
+      : id = 0,
+        especialidad = '',
+        psicologoGeneralId = 0;
+
+  Especialista({
+    required this.id,
+    required this.especialidad,
+    required this.psicologoGeneralId,
+  });
+
+  // Método copyWith para actualizar campos específicos
+  Especialista copyWith({
+    int? id,
+    String? especialidad,
+    int? psicologoGeneralId,
+  }) {
+    return Especialista(
+      id: id ?? this.id,
+      especialidad: especialidad ?? this.especialidad,
+      psicologoGeneralId: psicologoGeneralId ?? this.psicologoGeneralId,
+    );
+  }
+
+  // Método para crear un objeto Especialista desde JSON
+  factory Especialista.fromJson(Map<String, dynamic> json) => Especialista(
+        id: json["id_especialista"],
+        especialidad: json["especialidad"],
+        psicologoGeneralId: json["psicologoGeneral_id_psicologogeneral"],
+      );
+
+  // Método para convertir un objeto Especialista a JSON
+  Map<String, dynamic> toJson() => {
+        "id_especialista": id,
+        "especialidad": especialidad,
+        "psicologoGeneral_id_psicologogeneral": psicologoGeneralId,
+      };
+
+  @override
+  String toString() {
+    return 'Especialista -> id: $id, especialidad: $especialidad, psicologoGeneralId: $psicologoGeneralId';
+  }
+}
+
+)
+
+signin_page.dart:
+(
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'signin_controller.dart';
+
+class SignInPage extends StatelessWidget {
+  final SignInController control = Get.put(SignInController());
+
+  @override
+  Widget build(BuildContext context) {
+    control.getTerms(); // Cargar los términos y condiciones
+    return Scaffold(
+      backgroundColor: Color.fromRGBO(53, 68, 122, 1), // Color de fondo azul
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                _buildLogo(),
+                _buildForm(context),
+                SizedBox(height: 30),
+                _buildTermsAndConditions(context), // Términos y condiciones
+                SizedBox(height: 30),
+                _buildRegisterButton(context), // Botón para registrarse
+                SizedBox(height: 20),
+                // Mensaje en caso de éxito o error
+                Obx(() => Text(
+                  control.message.value,
+                  style: TextStyle(
+                    color: control.messageColor.value,
+                  ),
+                )),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Widget para construir el logo
+  Widget _buildLogo() {
+    return Column(
+      children: [
+        Container(
+          width: 100,
+          height: 100,
+          padding: EdgeInsets.all(0),
+          margin: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(29),
+          ),
+          child: AspectRatio(
+            aspectRatio: 1,
+            child: Image.asset(
+              'assets/images/logo.png', // Cambia esto según la ruta de tu logo
+              fit: BoxFit.contain,
+            ),
+          ),
+        ),
+        SizedBox(height: 20),
+      ],
+    );
+  }
+
+  // Widget para construir el formulario de registro
+  Widget _buildForm(BuildContext context) {
+    return Container(
+      width: 325,
+      padding: EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Colors.white, // Color de fondo del formulario
+        borderRadius: BorderRadius.circular(48), // Bordes redondeados
+      ),
+      child: Column(
+        children: [
+          _buildTextField("Nombre", control.nombreController),
+          _buildTextField("Apellido", control.apellidoController),
+          _buildTextField("Correo", control.correoController, onChanged: (value) {
+            control.checkCorreoForEspecialidad(); // Verificar si el correo contiene el dominio correcto
+          }),
+          _buildTextField("DNI", control.dniController),
+          _buildTextField("Número de celular", control.numeroCelularController),
+          _buildTextField("Contraseña", control.passwordController),
+          _buildDateField(context), // Campo para la fecha de nacimiento
+          Obx(() {
+  // Mostrar el campo de especialidad si es psicólogo
+            return control.showEspecialidadField.value
+                ? _buildTextField("Especialidad", control.especialidadController)
+                : SizedBox.shrink();
+          }),
+
+        ],
+      ),
+    );
+  }
+
+  // Widget para construir los campos de texto
+  Widget _buildTextField(String label, TextEditingController controller, {Function(String)? onChanged}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Container(
+        width: 250, // Controlamos el ancho del input
+        child: TextField(
+          controller: controller,
+          onChanged: onChanged, // Si se proporciona, llama a la función onChanged cuando el texto cambie
+          decoration: InputDecoration(
+            labelText: label,
+            labelStyle: TextStyle(color: Colors.grey), // Color del texto de la etiqueta
+            enabledBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: const Color.fromRGBO(53, 68, 122, 1), width: 2), // Color de la línea cuando no está enfocado
+            ),
+            focusedBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: const Color.fromRGBO(252, 201, 180, 1), width: 3), // Color de la línea al enfocar
+            ),
+            contentPadding: EdgeInsets.symmetric(vertical: 4, horizontal: 0), // Reducir el padding vertical
+          ),
+          style: TextStyle(color: Colors.black), // Color del texto de entrada
+        ),
+      ),
+    );
+  }
+
+  // Widget para seleccionar la fecha de nacimiento
+  Widget _buildDateField(BuildContext context) {
+    return Obx(() => GestureDetector(
+      onTap: () => control.selectDate(context),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Container(
+          width: 250,
+          child: InputDecorator(
+            decoration: InputDecoration(
+              labelText: 'Fecha de Nacimiento',
+              labelStyle: TextStyle(color: Colors.grey),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: const Color.fromRGBO(53, 68, 122, 1), width: 2),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: const Color.fromRGBO(252, 201, 180, 1), width: 3),
+              ),
+            ),
+            child: Text(
+              control.fechaNacimiento.value != null
+                  ? "${control.fechaNacimiento.value!.toLocal()}".split(' ')[0]
+                  : "Seleccionar Fecha",
+              style: TextStyle(color: Colors.black),
+            ),
+          ),
+        ),
+      ),
+    ));
+  }
+
+  // Widget para construir los términos y condiciones
+  Widget _buildTermsAndConditions(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start, // Alineación del checkbox
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center, // Alinear checkbox y texto en el centro
+          children: [
+            // Checkbox personalizado
+            Obx(() => GestureDetector(
+              onTap: () {
+                // Cambiar el valor del checkbox
+                control.termsCheck.value = !control.termsCheck.value;
+              },
+              child: Container(
+                width: 24,
+                height: 24,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Colors.white, // Color del borde del checkbox
+                    width: 2,
+                  ),
+                ),
+                child: Center(
+                  child: control.termsCheck.value
+                      ? Container(
+                          width: 12,
+                          height: 12,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Color(0xFFFFCC9B4), // Color interno del círculo al presionar
+                          ),
+                        )
+                      : null, // No mostrar nada si no está presionado
+                ),
+              ),
+            )),
+            SizedBox(width: 10), // Espacio entre el checkbox y el texto
+            GestureDetector(
+              onTap: () {
+                _showBottomSheet(context); // Mostrar los términos y condiciones
+              },
+              child: RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: "Acepto los ",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    TextSpan(
+                      text: "Términos y condiciones",
+                      style: TextStyle(
+                        decoration: TextDecoration.underline,
+                        color: Colors.lightBlueAccent,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  // Mostrar los términos y condiciones en un BottomSheet
+  void _showBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          height: MediaQuery.of(context).size.height * 0.8,
+          color: Colors.white,
+          padding: EdgeInsets.all(20),
+          child: Column(
+            children: [
+              SizedBox(height: 10),
+              Text(
+                'Términos y Condiciones',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(height: 10),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Text(control.markdownData.value),
+                ),
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        control.acceptTerms();
+                        Navigator.pop(context);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFF2196F3),
+                      ),
+                      child: Text('Acepto'),
+                    ),
+                  ),
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFF2196F3),
+                      ),
+                      child: Text('No acepto'),
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  // Widget para construir el botón de "Registrarse"
+  Widget _buildRegisterButton(BuildContext context) {
+    return Obx(() => SizedBox(
+      width: 200, // Ancho del botón
+      height: 50, // Altura del botón
+      child: ElevatedButton(
+        onPressed: control.termsCheck.value
+            ? () => control.createAccount(context)
+            : null,
+        style: ElevatedButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(48),
+            side: BorderSide(color: Colors.lightBlueAccent, width: 2),
+          ),
+          backgroundColor: Colors.transparent,
+        ),
+        child: Text(
+          "Registrarse",
+          style: TextStyle(
+            fontSize: 18, // Tamaño de la fuente
+            color: Colors.lightBlueAccent,
+          ),
+        ),
+      ),
+    ));
+  }
+}
+
+)
+
+signin_controller.dart:
+(
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:http/http.dart' as http;
+import 'package:psicoapp/models/Usuario.dart';
+import 'package:psicoapp/screens/Auth/Login/login_page.dart';
+import 'package:psicoapp/services/user_service.dart';
+import 'package:psicoapp/services/especialista_service.dart';
+
+class SignInController extends GetxController {
+  // Controladores para los campos del formulario
+  TextEditingController nombreController = TextEditingController();
+  TextEditingController apellidoController = TextEditingController();
+  TextEditingController correoController = TextEditingController();
+  TextEditingController dniController = TextEditingController();
+  TextEditingController numeroCelularController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  TextEditingController especialidadController = TextEditingController(); // Controlador para la especialidad
+  Rx<DateTime?> fechaNacimiento = Rx<DateTime?>(null);  // Fecha de nacimiento
+
+  RxString message = ''.obs;  // Mensaje para mostrar en la UI
+  var messageColor = Colors.white.obs;  // Color del mensaje
+  RxBool termsCheck = false.obs;  // Estado del checkbox de términos y condiciones
+  RxBool showEspecialidadField = false.obs;  // Mostrar/ocultar el campo de especialidad
+  RxString markdownData = ''.obs;  // Datos del markdown para términos y condiciones
+
+  UserService userService = UserService();  // Servicio para gestionar usuarios
+  EspecialistaService especialistaService = EspecialistaService();  // Servicio para gestionar especialistas
+
+  // Verificar si el correo contiene el dominio @validamente.cpi.com
+  void checkCorreoForEspecialidad() {
+    if (correoController.text.endsWith('@validamente.cpi.com')) {
+      showEspecialidadField.value = true;
+    } else {
+      showEspecialidadField.value = false;
+    }
+  }
+
+  // Método para crear una cuenta nueva
+  void createAccount(BuildContext context) async {
+    String rol = showEspecialidadField.value ? 'Psicologo' : 'Paciente';
+
+    // Crear usuario en el backend
+    Usuario? userCreated = await userService.register(
+      nombreController.text,
+      apellidoController.text,
+      correoController.text,
+      dniController.text,
+      numeroCelularController.text,
+      passwordController.text,
+      fechaNacimiento.value!,
+      rol,
+
+    );
+
+ // Crear el especialista solo si el usuario es psicólogo
+    if (userCreated != null) {
+      if (rol == 'Psicologo' && especialidadController.text.trim().isNotEmpty) {
+        await especialistaService.createEspecialista(
+            especialidadController.text, // Enviar la especialidad capturada desde el formulario.
+            userCreated.id // Enviar el id del usuario creado.
+        );
+      }
+
+      // Redirige a la página de login
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) => LoginPage(),
+          ),
+      );
+    } else {
+      message.value = 'Error al crear la cuenta';
+      messageColor.value = Colors.red;
+    }
+  }
+
+  // Seleccionar la fecha de nacimiento
+  Future<void> selectDate(BuildContext context) async {
+    DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null && picked != fechaNacimiento.value) {
+      fechaNacimiento.value = picked;
+    }
+  }
+
+  // Obtener términos y condiciones desde un archivo Markdown
+  Future<void> getTerms() async {
+    final response = await http.get(Uri.parse(
+        'https://raw.githubusercontent.com/mukeshsolanki/MarkdownView-Android/main/README.md')); // Ruta de ejemplo, debes cambiarla por la que necesites
+    if (response.statusCode == 200) {
+      markdownData.value = response.body; // Asignar el contenido Markdown al observable
+    } else {
+      markdownData.value = 'Error al cargar términos y condiciones';
+    }
+  }
+
+  // Aceptar los términos y condiciones
+  void acceptTerms() {
+    termsCheck.value = true;
+  }
+}
+
+)
+
+psicologogeneral_service.dart:
+(
+
+)
+
+user_service.dart:
+(
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:psicoapp/configs/constants.dart';
+import '../models/Usuario.dart';
+
+class UserService {
+  Future<Usuario?> validate(String email, String password) async {
+    String url = "${BASE_URL}usuarios/validate";
+
+    try {
+      // Enviar solicitud POST usando http.post
+      var response = await http.post(
+        Uri.parse(url),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
+          "correo": email,
+          "contrasena": password
+        }),
+      );
+
+      // Verificar si el código de estado es 200 (éxito)
+      if (response.statusCode == 200) {
+        var responseBody = json.decode(response.body);
+
+        // Convertir la respuesta a un objeto Usuario
+        final Usuario usuario = Usuario.fromJson(responseBody);
+        return usuario;
+      } else if (response.statusCode == 404) {
+        // Si no se encuentra el usuario
+        return null;
+      } else {
+        print('Error de validación: ${response.statusCode}');
+        return null;
+      }
+    } catch (e) {
+      print('Error no esperado: $e');
+      return null;
+    }
+  }
+
+  Future<Usuario?> updateUsuario(Usuario usuario, {String? imagePath}) async {
+    String url = "${BASE_URL}usuarios/${usuario.id}";
+    
+    // Si se sube una imagen, utilizamos Multipart para enviar tanto los datos del usuario como la imagen
+    if (imagePath != null && imagePath.isNotEmpty) {
+      var request = http.MultipartRequest('PUT', Uri.parse(url));
+      request.fields['nombre'] = usuario.nombre;
+      request.fields['apellido'] = usuario.apellido;
+      request.fields['correo'] = usuario.correo;
+      request.fields['numeroCelular'] = usuario.numeroCelular;
+      request.fields['DNI'] = usuario.DNI;
+      
+      // Agregar la imagen como parte del cuerpo de la solicitud
+      request.files.add(await http.MultipartFile.fromPath('image', imagePath));
+      
+      try {
+        var response = await request.send();
+        if (response.statusCode == 200) {
+          var responseBody = await response.stream.bytesToString();
+          final updatedUsuario = Usuario.fromJson(json.decode(responseBody));
+          return updatedUsuario;
+        } else {
+          print('Error al actualizar el usuario!');
+          return null;
+        }
+      } catch (e, stackTrace) {
+        print('Error no esperado: $e');
+        print(stackTrace);
+        return null;
+      }
+    } else {
+      // Si no hay imagen, enviamos los datos con PUT directamente
+      try {
+        var response = await http.put(
+          Uri.parse(url),
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode({
+            "nombre": usuario.nombre,
+            "apellido": usuario.apellido,
+            "correo": usuario.correo,
+            "numeroCelular": usuario.numeroCelular,
+            "DNI": usuario.DNI,
+          }),
+        );
+
+        if (response.statusCode == 200) {
+          var responseBody = json.decode(response.body);
+          final updatedUsuario = Usuario.fromJson(responseBody);
+          return updatedUsuario;
+        } else {
+          print('Error al actualizar el usuario!');
+          return null;
+        }
+      } catch (e) {
+        print('Error no esperado: $e');
+        return null;
+      }
+    }
+  }
+
+Future<Usuario?> register(
+    String nombre,
+    String apellido,
+    String correo,
+    String dni,
+    String numeroCelular,
+    String contrasena,
+    DateTime fechaNacimiento,
+    String rol, {
+    String? especialidad,
+  }) async {
+    String url = "${BASE_URL}usuarios"; // Ruta de creación de usuario
+
+    try {
+      var response = await http.post(
+        Uri.parse(url),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
+          "nombre": nombre,
+          "apellido": apellido,
+          "correo": correo,
+          "DNI": dni,
+          "NumCelular": numeroCelular,
+          "contrasena": contrasena,
+          "fecha_nacimiento": fechaNacimiento.toIso8601String(),
+          "rol": rol,
+          if (especialidad != null) "especialidad": especialidad, // Solo si es Psicólogo
+        }),
+      );
+
+      if (response.statusCode == 201) {
+        var responseBody = json.decode(response.body);
+        return Usuario.fromJson(responseBody);
+      } else {
+        print('Error de registro: ${response.statusCode}');
+        return null;
+      }
+    } catch (e) {
+      print('Error inesperado: $e');
+      return null;
+    }
+  }
+
+
+
+  Future<String?> reset(String dni, String email) async {
+    String url = "${BASE_URL}user/reset";
+    var request = http.MultipartRequest('POST', Uri.parse(url));
+    request.fields['dni'] = dni;
+    request.fields['email'] = email;
+    try {
+      var response = await request.send();
+      print(response.statusCode);
+      if (response.statusCode == 200) {
+        var responseBody = await response.stream.bytesToString();
+        final String r = responseBody;
+        return r;
+      } else if (response.statusCode == 404) {
+        var responseBody = await response.stream.bytesToString();
+        final String r = responseBody;
+        return r;
+      } else {
+        print('ERROORRR!!!');
+      }
+    } catch (e, stackTrace) {
+      print('Error no esperado: $e');
+      print(stackTrace);
+    }
+  }
+}
+
+)
+
+especialista_service.dart:
+(
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:psicoapp/configs/constants.dart'; // Configuración de URL base
+import 'package:psicoapp/models/especialista.dart'; // Modelo de Especialista
+
+class EspecialistaService {
+  Future<Especialista?> createEspecialista(String especialidad, int idUsuario) async {
+    String url = "${BASE_URL}especialistas";
+
+    try {
+      var response = await http.post(
+        Uri.parse(url),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
+          "especialidad": especialidad,
+          "Usuario_id_usuario": idUsuario,  // Enviar el id del usuario.
+        }),
+      );
+
+      if (response.statusCode == 201) {
+        var responseBody = json.decode(response.body);
+        return Especialista.fromJson(responseBody);
+      } else {
+        print('Error al crear el especialista: ${response.statusCode} - ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      print('Error no esperado: $e');
+      return null;
+    }
+  }
+}
+
+)

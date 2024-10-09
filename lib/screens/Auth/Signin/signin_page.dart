@@ -86,11 +86,12 @@ class SignInPage extends StatelessWidget {
           _buildTextField("Contraseña", control.passwordController),
           _buildDateField(context), // Campo para la fecha de nacimiento
           Obx(() {
-            // Mostrar el campo de especialidad si es psicólogo
+  // Mostrar el campo de especialidad si es psicólogo
             return control.showEspecialidadField.value
                 ? _buildTextField("Especialidad", control.especialidadController)
                 : SizedBox.shrink();
           }),
+
         ],
       ),
     );

@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:ulimagym/models/entities/Usuario.dart';
-import 'package:ulimagym/screens/Auth/Login/login_page.dart';
-import 'package:ulimagym/services/user_service.dart';
-import 'package:ulimagym/services/especialista_service.dart';
-import 'dart:convert';
+import 'package:psicoapp/models/Usuario.dart';
+import 'package:psicoapp/screens/Auth/Login/login_page.dart';
+import 'package:psicoapp/services/user_service.dart';
+import 'package:psicoapp/services/especialista_service.dart';
 
 class SignInController extends GetxController {
   // Controladores para los campos del formulario
@@ -50,16 +49,18 @@ class SignInController extends GetxController {
       passwordController.text,
       fechaNacimiento.value!,
       rol,
+      especialidad: showEspecialidadField.value ? especialidadController.text : null,  // Enviar especialidad solo si es psicólogo
     );
 
-    if (userCreated != null) {
-      // Si el rol es 'Psicologo', crear el especialista
-      if (rol == 'Psicologo') {
-        await especialistaService.createEspecialista(
-            especialidadController.text, userCreated.id);
-      }
+    // Mostrar error si la especialidad está vacía pero el rol es Psicologo
+    if (rol == 'Psicologo' && (especialidadController.text.trim().isEmpty || userCreated == null)) {
+      message.value = 'La especialidad es requerida para psicólogos';
+      messageColor.value = Colors.red;
+      return;
+    }
 
-      // Redirigir al login después de la creación
+    if (userCreated != null) {
+      // Redirige a la página de login si todo fue bien
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -71,6 +72,7 @@ class SignInController extends GetxController {
       messageColor.value = Colors.red;
     }
   }
+
 
   // Seleccionar la fecha de nacimiento
   Future<void> selectDate(BuildContext context) async {

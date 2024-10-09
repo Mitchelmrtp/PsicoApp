@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ulimagym/models/entities/Usuario.dart';
-import 'package:ulimagym/screens/profile/paciente/edituserprofile.dart';
+import 'package:psicoapp/models/Usuario.dart';
+import 'package:psicoapp/screens/profile/paciente/edituserprofile.dart';
 
 class UsuarioProfilePage extends StatefulWidget {
   final Usuario usuario;
