@@ -78,13 +78,38 @@ class SignInPage extends StatelessWidget {
         children: [
           _buildTextField("Nombre", control.nombreController),
           _buildTextField("Apellido", control.apellidoController),
-          _buildTextField("Correo", control.correoController, onChanged: (value) {
-            control.checkCorreoForEspecialidad(); // Verificar si el correo contiene el dominio correcto
-          }),
+          _buildTextField("Correo", control.correoController),
           _buildTextField("DNI", control.dniController),
           _buildTextField("Número de celular", control.numeroCelularController),
           _buildTextField("Contraseña", control.passwordController),
           _buildDateField(context), // Campo para la fecha de nacimiento
+         
+           // Dropdown para seleccionar el rol
+          Obx(() => Container(
+            width: 250,
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: DropdownButton<String>(
+              value: control.selectedRole.value,
+              onChanged: (String? newValue) {
+                if (newValue != null) {
+                  control.changeRole(newValue);
+                }
+              },
+              items: <String>['Paciente', 'Psicólogo']
+                  .map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+              isExpanded: true,
+              underline: Container(
+                height: 2,
+                color: const Color.fromRGBO(53, 68, 122, 1),
+              ),
+            ),
+          )),
+         
           Obx(() {
   // Mostrar el campo de especialidad si es psicólogo
             return control.showEspecialidadField.value

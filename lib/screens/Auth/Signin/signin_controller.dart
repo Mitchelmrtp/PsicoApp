@@ -22,22 +22,20 @@ class SignInController extends GetxController {
   RxBool termsCheck = false.obs;  // Estado del checkbox de términos y condiciones
   RxBool showEspecialidadField = false.obs;  // Mostrar/ocultar el campo de especialidad
   RxString markdownData = ''.obs;  // Datos del markdown para términos y condiciones
+  RxString selectedRole = 'Paciente'.obs;
 
   UserService userService = UserService();  // Servicio para gestionar usuarios
   EspecialistaService especialistaService = EspecialistaService();  // Servicio para gestionar especialistas
 
   // Verificar si el correo contiene el dominio @validamente.cpi.com
-  void checkCorreoForEspecialidad() {
-    if (correoController.text.endsWith('@validamente.cpi.com')) {
-      showEspecialidadField.value = true;
-    } else {
-      showEspecialidadField.value = false;
-    }
+  void changeRole(String role) {
+    selectedRole.value = role;
+    showEspecialidadField.value = role == 'Psicólogo';
   }
 
   // Método para crear una cuenta nueva
   void createAccount(BuildContext context) async {
-    String rol = showEspecialidadField.value ? 'Psicologo' : 'Paciente';
+    String rol = selectedRole.value;
 
     // Crear usuario en el backend
     Usuario? userCreated = await userService.register(

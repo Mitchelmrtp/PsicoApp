@@ -165,6 +165,36 @@ class Especialista {
 
 )
 
+paciente.dart:
+(
+import 'dart:convert';
+
+Paciente pacienteFromJson(String str) => Paciente.fromJson(json.decode(str));
+
+String pacienteToJson(Paciente data) => json.encode(data.toJson());
+
+class Paciente {
+  int idPaciente;
+  int usuarioId;
+
+  Paciente({
+    required this.idPaciente,
+    required this.usuarioId,
+  });
+
+  factory Paciente.fromJson(Map<String, dynamic> json) => Paciente(
+        idPaciente: json["idPaciente"],
+        usuarioId: json["Usuario_id_usuario"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "idPaciente": idPaciente,
+        "Usuario_id_usuario": usuarioId,
+      };
+}
+
+)
+
 signin_page.dart:
 (
 import 'package:flutter/material.dart';
@@ -533,30 +563,30 @@ class SignInController extends GetxController {
       passwordController.text,
       fechaNacimiento.value!,
       rol,
-
+      especialidad: showEspecialidadField.value ? especialidadController.text : null,  // Enviar especialidad solo si es psicólogo
     );
 
- // Crear el especialista solo si el usuario es psicólogo
-    if (userCreated != null) {
-      if (rol == 'Psicologo' && especialidadController.text.trim().isNotEmpty) {
-        await especialistaService.createEspecialista(
-            especialidadController.text, // Enviar la especialidad capturada desde el formulario.
-            userCreated.id // Enviar el id del usuario creado.
-        );
-      }
+    // Mostrar error si la especialidad está vacía pero el rol es Psicologo
+    if (rol == 'Psicologo' && (especialidadController.text.trim().isEmpty || userCreated == null)) {
+      message.value = 'La especialidad es requerida para psicólogos';
+      messageColor.value = Colors.red;
+      return;
+    }
 
-      // Redirige a la página de login
+    if (userCreated != null) {
+      // Redirige a la página de login si todo fue bien
       Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-              builder: (context) => LoginPage(),
-          ),
+        context,
+        MaterialPageRoute(
+          builder: (context) => LoginPage(),
+        ),
       );
     } else {
       message.value = 'Error al crear la cuenta';
       messageColor.value = Colors.red;
     }
   }
+
 
   // Seleccionar la fecha de nacimiento
   Future<void> selectDate(BuildContext context) async {
@@ -585,6 +615,848 @@ class SignInController extends GetxController {
   // Aceptar los términos y condiciones
   void acceptTerms() {
     termsCheck.value = true;
+  }
+}
+
+)
+
+login_page.dart:
+(
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'login_controller.dart';
+
+class LoginPage extends StatelessWidget {
+  LoginController control = Get.put(LoginController());
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Color.fromRGBO(53, 68, 122, 1), // Color de fondo azul
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Logo del sistema
+                _buildLogo(),
+                SizedBox(height: 40),
+                // Formulario de Login
+                _buildForm(context),
+                SizedBox(height: 20),
+                // Botón para iniciar sesión
+                _buildLoginButton(context),
+                SizedBox(height: 20),
+                // Botón para registrarse
+                _buildRegisterButton(context),
+                SizedBox(height: 60),
+                // Opción de recuperar contraseña
+                GestureDetector(
+                  onTap: () => control.goToRecover(context),
+                  child: Text(
+                    '¿Olvidaste tu contraseña?',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.white,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 20),
+                // Mensaje de error o éxito
+                Obx(() => control.message.isNotEmpty
+                    ? Text(
+                        control.message.value,
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: control.messageColor.value,
+                        ),
+                      )
+                    : SizedBox.shrink()),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLogo() {
+    return Container(
+      width: 100,
+      height: 100,
+      padding: EdgeInsets.all(0),
+      margin: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(29),
+      ),
+      child: AspectRatio(
+        aspectRatio: 1,
+        child: Image.asset(
+          'assets/images/logo.png', // Asegúrate de tener el logo en la ruta correcta
+          fit: BoxFit.contain,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildForm(BuildContext context) {
+    return Container(
+      width: 290,
+      height: 165,
+      padding: EdgeInsets.all(20),
+      margin: EdgeInsets.symmetric(horizontal: 40),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(48),
+      ),
+      child: Column(
+        children: [
+          // Campo de texto para el correo
+          _buildTextField(
+            controller: control.userController,
+            labelText: 'Correo',
+          ),
+          SizedBox(height: 10),
+          // Campo de texto para la contraseña
+          _buildTextField(
+            controller: control.passController,
+            labelText: 'Contraseña',
+            obscureText: true,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String labelText,
+    bool obscureText = false,
+  }) {
+    return Container(
+      width: 210,
+      child: TextField(
+        controller: controller,
+        obscureText: obscureText,
+        style: TextStyle(fontSize: 16),
+        decoration: InputDecoration(
+          labelText: labelText,
+          labelStyle: TextStyle(color: Colors.grey),
+          enabledBorder: UnderlineInputBorder(
+            borderSide: BorderSide(
+              color: const Color.fromRGBO(53, 68, 122, 1),
+              width: 2.0,
+            ),
+          ),
+          focusedBorder: UnderlineInputBorder(
+            borderSide: BorderSide(
+              color: const Color.fromRGBO(252, 201, 180, 1),
+              width: 3.0,
+            ),
+          ),
+          contentPadding: EdgeInsets.only(
+            bottom: -10, // Acerca el labelText al underline
+            left: 0,
+            right: 0,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoginButton(BuildContext context) {
+    return Container(
+      width: 300,
+      height: 60,
+      padding: EdgeInsets.symmetric(horizontal: 40),
+      child: SizedBox(
+        width: double.infinity,
+        child: ElevatedButton(
+          onPressed: () => control.login(context),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.white,
+            foregroundColor: Color(0xFF3E4A67),
+            padding: EdgeInsets.symmetric(vertical: 15),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(48),
+            ),
+          ),
+          child: Text(
+            'Iniciar sesión',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRegisterButton(BuildContext context) {
+    return Container(
+      width: 300,
+      height: 60,
+      padding: EdgeInsets.symmetric(horizontal: 40),
+      child: SizedBox(
+        width: double.infinity,
+        child: OutlinedButton(
+          onPressed: () => control.goToSignIn(context),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: Colors.white,
+            side: BorderSide(color: Colors.white),
+            padding: EdgeInsets.symmetric(vertical: 15),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(48),
+            ),
+          ),
+          child: Text(
+            'Registrarse',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+)
+
+login_controller.dart:
+(
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:psicoapp/screens/Auth/Recover/recover_page.dart';
+import 'package:psicoapp/screens/Auth/Signin/signin_page.dart';
+import 'package:psicoapp/screens/Home/Home_Paciente/homepaciente_page.dart';
+import 'package:psicoapp/models/Usuario.dart';
+import 'package:psicoapp/screens/Home/Home_Psicologo/homepsicologo_page.dart';
+import 'package:psicoapp/services/user_service.dart';
+
+class LoginController extends GetxController {
+  TextEditingController userController = TextEditingController();
+  TextEditingController passController = TextEditingController();
+  RxString message = 'primer mensaje'.obs;
+  var messageColor = Colors.white.obs;
+  UserService userService = UserService();
+
+void login(BuildContext context) async {
+  String user = userController.text;
+  String password = passController.text;
+
+  // Obtener el usuario autenticado desde el servicio de usuario
+  Usuario? userValidated = await userService.validate(user, password);
+
+  if (userValidated == null) {
+    message.value = 'Error en el servidor';
+    messageColor.value = Colors.red;
+  } else if (userValidated.id == 0) {
+    message.value = 'Usuario o contraseña incorrectos';
+    messageColor.value = Colors.red;
+  } else {
+    // Redirigir dependiendo del rol del usuario
+    if (userValidated.rol == 'Psicologo') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomePsicologoPage(usuarioLogged: userValidated),
+        ),
+      );
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomePacientePage(usuarioLogged: userValidated),
+        ),
+      );
+    }
+  }
+}
+
+
+
+
+  // Redirigir al registro
+  void goToSignIn(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => SignInPage()),
+    );
+  }
+
+  // Redirigir a la recuperación de contraseña
+  void goToRecover(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => RecoverPage()),
+    );
+  }
+}
+
+)
+
+homepaciente_page.dart:
+(
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:psicoapp/models/Usuario.dart';
+import 'package:psicoapp/screens/Solicitar_Cita/Solicitar_Cita_page.dart';
+import 'package:psicoapp/screens/Home/Home_Paciente/prueba.dart';
+import 'package:psicoapp/screens/profile/psicologo/doctor_page.dart';
+import 'package:psicoapp/screens/profile/paciente/userprofile_page.dart';
+import 'homepaciente_controller.dart';
+
+class ContactSpecialistPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Color(0xFF112244), // Fondo azul oscuro
+      appBar: AppBar(
+        elevation: 0, // Sin sombra
+        backgroundColor: Color(0xFF112244), // Fondo del AppBar igual al fondo
+        automaticallyImplyLeading: true, // Mostrar el ícono de retroceso
+        centerTitle: true, // Centrar el ícono
+        title: Icon(
+          Icons.sentiment_satisfied_alt, // Ícono de la carita
+          color: Colors.white,
+          size: 28,
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: CircleAvatar(
+              radius: 15,
+              backgroundImage: NetworkImage(
+                  'https://randomuser.me/api/portraits/women/44.jpg'), // Imagen de perfil
+            ),
+          ),
+        ],
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              'Estás a punto de contactar a un especialista en salud mental',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 40), // Espacio entre el texto y los botones
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green, // Fondo verde
+                foregroundColor: Colors.white, // Texto blanco
+                minimumSize: Size(200, 50), // Tamaño del botón
+              ),
+              onPressed: () {
+                // Acción al confirmar
+                print("Confirmar contacto con especialista");
+              },
+              child: Text('CONFIRMAR'),
+            ),
+            SizedBox(height: 20), // Espacio entre los botones
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.red, // Fondo rojo
+                foregroundColor: Colors.white, // Texto blanco
+                minimumSize: Size(200, 50), // Tamaño del botón
+              ),
+              onPressed: () {
+                // Regresar a la pantalla anterior
+                Navigator.pop(context);
+              },
+              child: Text('CANCELAR'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class HomePacientePage extends StatefulWidget {
+  final Usuario usuarioLogged;
+
+  const HomePacientePage({Key? key, required this.usuarioLogged}) : super(key: key);
+
+  @override
+  _HomePacientePageState createState() => _HomePacientePageState(usuarioLogged: usuarioLogged);
+}
+
+class _HomePacientePageState extends State<HomePacientePage> {
+  final Usuario usuarioLogged;
+  HomePacienteController control = Get.put(HomePacienteController());
+  int _selectedIndex = 0;
+
+  late final List<Widget> _widgetOptions;
+
+  bool _notificationsEnabled = true;
+  bool _agendaEnabled = false;
+  bool _monitoringEnabled = true;
+
+  _HomePacientePageState({required this.usuarioLogged});
+
+  @override
+  void initState() {
+    super.initState();
+    // Definir las pantallas a mostrar en el BottomNavigationBar
+    _widgetOptions = [
+      SolicitarCitaPage(usuarioLogged),
+      PruebaPage(),
+      UsuarioProfilePage(usuario: usuarioLogged), // Perfil del usuario logueado
+      DoctorProfilePage(doctorId: usuarioLogged.id) // Se asume que el id del usuario es el del doctor en este caso
+    ];
+  }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  // Crear el Drawer (menú lateral)
+  Widget _buildDrawer() {
+    return Drawer(
+      child: Container(
+        color: Color(0xFF112244), // Color de fondo del Drawer
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            SizedBox(height: 20), // Espacio en la parte superior
+            // ExpansionTile para Notificaciones
+            ExpansionTile(
+              leading: Icon(Icons.notifications, color: Colors.white),
+              title: Text('Notificaciones',
+                  style: TextStyle(color: Colors.white)),
+              children: <Widget>[
+                ListTile(
+                  title: Text('Activar Notificaciones',
+                      style: TextStyle(color: Colors.white)),
+                  trailing: Switch(
+                    value: _notificationsEnabled,
+                    onChanged: (value) {
+                      setState(() {
+                        _notificationsEnabled = value;
+                      });
+                    },
+                  ),
+                  subtitle: Text(_notificationsEnabled ? 'Activado' : 'Desactivado',
+                      style: TextStyle(color: Colors.grey)),
+                ),
+                ListTile(
+                  title: Text('Tono de notificación',
+                      style: TextStyle(color: Colors.white)),
+                  trailing: Icon(Icons.arrow_drop_down, color: Colors.white),
+                  subtitle: Text('Latido de corazón',
+                      style: TextStyle(color: Colors.grey)),
+                  onTap: () {
+                    // Implementar la selección de tono
+                  },
+                ),
+                ListTile(
+                  title: Text('Agenda', style: TextStyle(color: Colors.white)),
+                  trailing: Switch(
+                    value: _agendaEnabled,
+                    onChanged: (value) {
+                      setState(() {
+                        _agendaEnabled = value;
+                      });
+                    },
+                  ),
+                  subtitle:
+                      Text(_agendaEnabled ? 'Activado' : 'Desactivado',
+                          style: TextStyle(color: Colors.grey)),
+                ),
+                ListTile(
+                  title: Text('Monitoreo emocional',
+                      style: TextStyle(color: Colors.white)),
+                  trailing: Switch(
+                    value: _monitoringEnabled,
+                    onChanged: (value) {
+                      setState(() {
+                        _monitoringEnabled = value;
+                      });
+                    },
+                  ),
+                  subtitle: Text(
+                      _monitoringEnabled ? 'Activado' : 'Desactivado',
+                      style: TextStyle(color: Colors.grey)),
+                ),
+              ],
+            ),
+            Divider(color: Colors.white24, thickness: 1), // Línea divisora
+            ListTile(
+              leading: Icon(Icons.security, color: Colors.white),
+              title: Text('Seguridad', style: TextStyle(color: Colors.white)),
+              onTap: () {
+                // Acción al pulsar
+              },
+            ),
+            Divider(color: Colors.white24, thickness: 1), // Línea divisora
+            ListTile(
+              leading: Icon(Icons.article, color: Colors.white),
+              title: Text('Términos y condiciones',
+                  style: TextStyle(color: Colors.white)),
+              onTap: () {
+                // Acción al pulsar
+              },
+            ),
+            Divider(color: Colors.white24, thickness: 1), // Línea divisora
+            ListTile(
+              leading: Icon(Icons.privacy_tip, color: Colors.white),
+              title: Text('Política de privacidad',
+                  style: TextStyle(color: Colors.white)),
+              onTap: () {
+                // Acción al pulsar
+              },
+            ),
+            Divider(color: Colors.white24, thickness: 1), // Línea divisora
+            ListTile(
+              leading: Icon(Icons.error_outline, color: Colors.white),
+              title: Text('Informar de un error',
+                  style: TextStyle(color: Colors.white)),
+              onTap: () {
+                // Acción al pulsar
+              },
+            ),
+            Spacer(), // Empuja el contenido hacia arriba para dejar espacio
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red, // Fondo rojo para el botón
+                  foregroundColor: Colors.white, // Texto en blanco
+                  minimumSize: Size(double.infinity, 50), // Tamaño ancho completo
+                ),
+                onPressed: () {
+                  // Redirigir a la pantalla de confirmación
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ContactSpecialistPage(),
+                    ),
+                  );
+                },
+                child: Text('Contacta a un especialista'),
+              ),
+            ),
+            SizedBox(height: 20), // Espacio debajo del botón
+            Center(
+              child: TextButton(
+                onPressed: () {
+                  // Redirigir a la pantalla de inicio de sesión
+                  control.goToLogIn(context);
+                },
+                child: Text('Cerrar sesión',
+                    style: TextStyle(color: Colors.white)),
+              ),
+            ),
+            SizedBox(height: 20), // Espacio adicional para que quede alineado
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Actualizar los iconos del BottomNavigationBar
+  Widget _navigationBottom() {
+    return BottomNavigationBar(
+      items: const <BottomNavigationBarItem>[
+        BottomNavigationBarItem(
+          icon: Icon(Icons.star_border), // Ícono de estrella
+          label: '',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.photo_camera_outlined), // Ícono de cámara
+          label: '',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.chat_bubble_outline), // Ícono de chat
+          label: '',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.person_outline), // Ícono de perfil
+          label: '',
+        ),
+      ],
+      currentIndex: _selectedIndex,
+      selectedItemColor: Color(0XFFF26F29), // Color seleccionado
+      unselectedItemColor: Colors.black, // Color de los íconos no seleccionados
+      backgroundColor: Colors.white, // Fondo blanco
+      showSelectedLabels: false, // Sin etiquetas
+      showUnselectedLabels: false, // Sin etiquetas
+      onTap: _onItemTapped,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      appBar: AppBar(
+        elevation: 0, // Sin sombra
+        backgroundColor: Colors.white, // Fondo blanco para el AppBar
+        automaticallyImplyLeading: false,
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: Icon(Icons.menu, color: Colors.black),
+            onPressed: () => Scaffold.of(context).openDrawer(), // Abre el Drawer
+          ),
+        ),
+        centerTitle: true, // Carita sonriente centrada
+        title: Icon(
+          Icons.sentiment_satisfied_alt, // Ícono de carita sonriente
+          color: Colors.black,
+          size: 28, // Tamaño ajustado al mockup
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.notifications_none, color: Colors.black),
+            onPressed: () {
+              print("Abrir notificaciones");
+            },
+          ),
+          // Dentro de las acciones en AppBar
+          GestureDetector(
+            onTap: () {
+              // Al hacer clic en la imagen, ir al perfil del usuario
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => UsuarioProfilePage(usuario: usuarioLogged), // Pasar los datos del usuario
+                ),
+              );
+            },
+            child: CircleAvatar(
+              radius: 15,
+              backgroundImage: NetworkImage(
+                'https://randomuser.me/api/portraits/women/44.jpg', // URL de la imagen de perfil
+              ),
+            ),
+          ),
+
+        ],
+      ),
+      drawer: _buildDrawer(), // Drawer como menú lateral
+      body: _widgetOptions.elementAt(_selectedIndex), // Contenido del body
+      bottomNavigationBar: _navigationBottom(), // Barra de navegación inferior
+    );
+  }
+}
+
+)
+
+homepaciente_controller.dart:
+(
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:psicoapp/screens/Auth/Login/login_page.dart';
+
+class HomePacienteController extends GetxController {
+  // Definir el método goToSignIn para redirigir a la pantalla de inicio de sesión
+  void goToLogIn(BuildContext context) {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => LoginPage(), // Redirigir a la página de inicio de sesión
+      ),
+    );
+  }
+}
+
+)
+
+userprofile_controller.dart:
+(
+import 'package:get/get.dart';
+import 'package:psicoapp/models/Usuario.dart';
+
+class UsuarioProfileController extends GetxController {
+  final Rx<Usuario> usuario;
+
+  UsuarioProfileController(this.usuario);
+
+  // Método para actualizar la información del perfil
+  void updateProfile(String nombre, String apellido, String correo, String telefono, String? nuevaContrasena) {
+    usuario.update((user) {
+      user?.nombre = nombre;
+      user?.apellido = apellido;
+      user?.correo = correo;
+      user?.numeroCelular = telefono;
+      
+      // Actualizar la contraseña solo si se proporciona una nueva
+      if (nuevaContrasena != null && nuevaContrasena.isNotEmpty) {
+        user?.contrasena = nuevaContrasena;
+      }
+    });
+  }
+}
+
+)
+
+userprofile_page.dart:
+(
+import 'package:flutter/material.dart';
+import 'package:psicoapp/models/Usuario.dart';
+import 'package:psicoapp/screens/profile/paciente/edituserprofile.dart';
+
+class UsuarioProfilePage extends StatefulWidget {
+  final Usuario usuario;
+
+  const UsuarioProfilePage({Key? key, required this.usuario}) : super(key: key);
+
+  @override
+  _UsuarioProfilePageState createState() => _UsuarioProfilePageState();
+}
+
+class _UsuarioProfilePageState extends State<UsuarioProfilePage> {
+  late Usuario usuario; // Para mantener los datos actualizados del usuario
+
+  @override
+  void initState() {
+    super.initState();
+    usuario = widget.usuario; // Inicializar con los datos actuales
+  }
+
+  void _navigateAndEditProfile() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EditProfilePage(usuario: usuario),
+      ),
+    );
+
+    if (result != null && result is Usuario) {
+      // Actualizar los datos del usuario con los nuevos datos
+      setState(() {
+        usuario = result; // Recibe el usuario actualizado y refresca la vista
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Color(0xFF112244), // Fondo azul oscuro
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Color(0xFF112244), // Fondo azul oscuro
+        automaticallyImplyLeading: true,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+        centerTitle: true, // Centrar carita sonriente
+        title: Icon(
+          Icons.sentiment_satisfied_alt, // Carita sonriente
+          color: Colors.white,
+          size: 28,
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.edit, color: Colors.white),
+            onPressed: _navigateAndEditProfile, // Llamar al método de edición
+          ),
+        ],
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(4.0),
+          child: Container(
+            color: Colors.white, // Línea divisora blanca
+            height: 1.0,
+          ),
+        ),
+      ),
+      body: Center(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            SizedBox(height: 20),
+            // Imagen de perfil centrada y de mayor tamaño
+            Stack(
+              children: [
+                CircleAvatar(
+                  radius: 60, // Tamaño más grande para la imagen de perfil
+                  backgroundImage: NetworkImage(
+                      'https://randomuser.me/api/portraits/men/44.jpg'), // Puedes cambiar la imagen aquí
+                ),
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: IconButton(
+                    icon: Icon(Icons.camera_alt, color: Colors.white),
+                    onPressed: () {
+                      // Implementar acción de tomar o seleccionar foto
+                    },
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 20),
+            // Nombre del usuario, más grande y centrado
+            Text(
+              '${usuario.nombre} ${usuario.apellido}', // Cambiado para incluir nombre y apellido
+              style: TextStyle(
+                fontSize: 22,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 10),
+            // DNI del usuario
+            Text(
+              "DNI",
+              style: TextStyle(color: Colors.grey, fontSize: 14),
+            ),
+            Text(
+              usuario.DNI,
+              style: TextStyle(
+                fontSize: 18,
+                color: Colors.white,
+              ),
+            ),
+            SizedBox(height: 10),
+            // Correo electrónico
+            Text(
+              "Correo electrónico",
+              style: TextStyle(color: Colors.grey, fontSize: 14),
+            ),
+            Text(
+              usuario.correo,
+              style: TextStyle(
+                fontSize: 18,
+                color: Colors.white,
+              ),
+            ),
+            SizedBox(height: 10),
+            // Número de celular
+            Text(
+              "Número de celular",
+              style: TextStyle(color: Colors.grey, fontSize: 14),
+            ),
+            Text(
+              usuario.numeroCelular,
+              style: TextStyle(
+                fontSize: 18,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
@@ -706,9 +1578,9 @@ Future<Usuario?> register(
     String contrasena,
     DateTime fechaNacimiento,
     String rol, {
-    String? especialidad,
+    String? especialidad,  // Parámetro opcional
   }) async {
-    String url = "${BASE_URL}usuarios"; // Ruta de creación de usuario
+    String url = "${BASE_URL}usuarios";  // Ruta para crear un usuario
 
     try {
       var response = await http.post(
@@ -723,7 +1595,7 @@ Future<Usuario?> register(
           "contrasena": contrasena,
           "fecha_nacimiento": fechaNacimiento.toIso8601String(),
           "rol": rol,
-          if (especialidad != null) "especialidad": especialidad, // Solo si es Psicólogo
+          if (especialidad != null) "especialidad": especialidad,  // Enviar especialidad solo si es psicólogo
         }),
       );
 
@@ -778,8 +1650,9 @@ import 'package:psicoapp/configs/constants.dart'; // Configuración de URL base
 import 'package:psicoapp/models/especialista.dart'; // Modelo de Especialista
 
 class EspecialistaService {
-  Future<Especialista?> createEspecialista(String especialidad, int idUsuario) async {
-    String url = "${BASE_URL}especialistas";
+  // Método para crear un especialista
+  Future<Especialista?> createEspecialista(String especialidad, int idPsicologoGeneral) async {
+    String url = "${BASE_URL}especialistas";  // Ruta del endpoint de especialistas
 
     try {
       var response = await http.post(
@@ -787,15 +1660,48 @@ class EspecialistaService {
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
           "especialidad": especialidad,
-          "Usuario_id_usuario": idUsuario,  // Enviar el id del usuario.
+          "PsicologoGeneral_id_psicologogeneral": idPsicologoGeneral,  // Enviar el id del PsicologoGeneral.
         }),
       );
 
       if (response.statusCode == 201) {
         var responseBody = json.decode(response.body);
-        return Especialista.fromJson(responseBody);
+        return Especialista.fromJson(responseBody);  // Crear instancia de Especialista desde la respuesta
       } else {
         print('Error al crear el especialista: ${response.statusCode} - ${response.body}');
+        return null;
+      }
+    } catch (e) {
+      print('Error no esperado: $e');
+      return null;
+    }
+  }
+}
+
+)
+
+paciente_service.dart:
+(
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:psicoapp/configs/constants.dart';
+import 'package:psicoapp/models/Paciente.dart'; // Modelo de Paciente
+
+class PacienteService {
+  Future<Paciente?> getPacienteByUsuarioId(int usuarioId) async {
+    String url = "${BASE_URL}pacientes/$usuarioId"; // Endpoint para obtener el paciente por usuarioId
+
+    try {
+      var response = await http.get(
+        Uri.parse(url),
+        headers: {"Content-Type": "application/json"},
+      );
+
+      if (response.statusCode == 200) {
+        var responseBody = json.decode(response.body);
+        return Paciente.fromJson(responseBody); // Devuelve el objeto Paciente
+      } else {
+        print('Error al obtener el paciente: ${response.statusCode}');
         return null;
       }
     } catch (e) {
