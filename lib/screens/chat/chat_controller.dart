@@ -31,7 +31,7 @@ class UserSelectPage extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => ChatPage(user: user, room: room),
+                      builder: (context) => ChatPage(user: user, roomId: room),
                     ),
                   );
                 }

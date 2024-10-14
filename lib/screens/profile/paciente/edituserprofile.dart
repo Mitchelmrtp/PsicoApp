@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:psicoapp/models/Usuario.dart';
 import 'package:psicoapp/services/user_service.dart';
+import 'package:psicoapp/widgets/changepassword_dialog.dart';
 
 class EditProfilePage extends StatefulWidget {
   final Usuario usuario;
@@ -15,17 +16,18 @@ class EditProfilePage extends StatefulWidget {
 class _EditProfilePageState extends State<EditProfilePage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController nombreController = TextEditingController();
-  final TextEditingController apellidoController = TextEditingController(); // Añadido
+  final TextEditingController apellidoController = TextEditingController();
   final TextEditingController dniController = TextEditingController();
   final TextEditingController correoController = TextEditingController();
   final TextEditingController celularController = TextEditingController();
   final TextEditingController rolController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
     // Inicializar los controladores con los datos actuales del usuario
     nombreController.text = widget.usuario.nombre;
-    apellidoController.text = widget.usuario.apellido; // Añadido
+    apellidoController.text = widget.usuario.apellido;
     dniController.text = widget.usuario.DNI;
     correoController.text = widget.usuario.correo;
     celularController.text = widget.usuario.numeroCelular;
@@ -34,25 +36,31 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   void _saveProfile() async {
     if (_formKey.currentState!.validate()) {
+      // Crear una instancia de Usuario con los datos actualizados
       Usuario updatedUser = Usuario(
         id: widget.usuario.id,
         nombre: nombreController.text,
-        apellido: apellidoController.text, // Añadido
+        apellido: apellidoController.text,
         correo: correoController.text,
         DNI: dniController.text,
         numeroCelular: celularController.text,
-        contrasena: widget.usuario.contrasena, // No editable
-        fechaNacimiento: widget.usuario.fechaNacimiento, // Mantener la fecha
+        contrasena: widget.usuario.contrasena, // Mantener la contraseña
+        fechaNacimiento: widget.usuario.fechaNacimiento,
         rol: rolController.text,
       );
 
+      // Actualizar el usuario llamando al servicio
       var updatedUsuario = await UserService().updateUsuario(updatedUser);
 
       if (updatedUsuario != null) {
-        Navigator.pop(context, updatedUsuario); // Regresar con el usuario actualizado
-        Get.snackbar('Éxito', 'Perfil actualizado correctamente');
+        if (mounted) {
+          Navigator.pop(context, updatedUsuario); // Regresar con el usuario actualizado
+          Get.snackbar('Éxito', 'Perfil actualizado correctamente');
+        }
       } else {
-        Get.snackbar('Error', 'Hubo un problema al actualizar el perfil');
+        if (mounted) {
+          Get.snackbar('Error', 'Hubo un problema al actualizar el perfil');
+        }
       }
     }
   }
@@ -86,7 +94,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 },
               ),
               TextFormField(
-                controller: apellidoController, // Añadido
+                controller: apellidoController,
                 decoration: InputDecoration(labelText: 'Apellido'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -123,6 +131,20 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     return 'Por favor ingresa un número de celular válido';
                   }
                   return null;
+                },
+              ),
+              // Botón para abrir el diálogo de cambio de contraseña
+              SizedBox(height: 20),
+              ElevatedButton(
+                child: Text('Cambiar Contraseña'),
+                onPressed: () {
+                  // Abrir el diálogo de cambio de contraseña
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return ChangePasswordDialog(usuario: widget.usuario);
+                    },
+                  );
                 },
               ),
             ],

@@ -1,15 +1,23 @@
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:psicoapp/screens/Auth/Login/login_page.dart';
+import 'package:psicoapp/models/Usuario.dart';
+import 'package:psicoapp/services/user_service.dart';
 
-class HomePsicologoController extends GetxController {
-  // Definir el método goToSignIn para redirigir a la pantalla de inicio de sesión
-  void goToLogIn(BuildContext context) {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => LoginPage(), // Redirigir a la página de inicio de sesión
-      ),
-    );
+
+class HomeControllerPsicologo extends GetxController {
+  var pacientes = <Usuario>[].obs;
+  UserService userService = UserService();
+
+  // Cargar la lista de pacientes del psicólogo
+  void loadPacientes(int psicologoId) async {
+    try {
+      List<Usuario>? result = await userService.getPacientesByPsicologo(psicologoId);
+      if (result != null) {
+        pacientes.assignAll(result);
+      } else {
+        pacientes.clear();
+      }
+    } catch (e) {
+      print('Error al cargar pacientes: $e');
+    }
   }
 }

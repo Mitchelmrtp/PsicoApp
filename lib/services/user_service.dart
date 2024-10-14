@@ -38,65 +38,63 @@ class UserService {
     }
   }
 
-  Future<Usuario?> updateUsuario(Usuario usuario, {String? imagePath}) async {
+   Future<Usuario?> updateUsuario(Usuario usuario) async {
     String url = "${BASE_URL}usuarios/${usuario.id}";
-    
-    // Si se sube una imagen, utilizamos Multipart para enviar tanto los datos del usuario como la imagen
-    if (imagePath != null && imagePath.isNotEmpty) {
-      var request = http.MultipartRequest('PUT', Uri.parse(url));
-      request.fields['nombre'] = usuario.nombre;
-      request.fields['apellido'] = usuario.apellido;
-      request.fields['correo'] = usuario.correo;
-      request.fields['numeroCelular'] = usuario.numeroCelular;
-      request.fields['DNI'] = usuario.DNI;
-      
-      // Agregar la imagen como parte del cuerpo de la solicitud
-      request.files.add(await http.MultipartFile.fromPath('image', imagePath));
-      
-      try {
-        var response = await request.send();
-        if (response.statusCode == 200) {
-          var responseBody = await response.stream.bytesToString();
-          final updatedUsuario = Usuario.fromJson(json.decode(responseBody));
-          return updatedUsuario;
-        } else {
-          print('Error al actualizar el usuario!');
-          return null;
-        }
-      } catch (e, stackTrace) {
-        print('Error no esperado: $e');
-        print(stackTrace);
-        return null;
-      }
-    } else {
-      // Si no hay imagen, enviamos los datos con PUT directamente
-      try {
-        var response = await http.put(
-          Uri.parse(url),
-          headers: {"Content-Type": "application/json"},
-          body: jsonEncode({
-            "nombre": usuario.nombre,
-            "apellido": usuario.apellido,
-            "correo": usuario.correo,
-            "numeroCelular": usuario.numeroCelular,
-            "DNI": usuario.DNI,
-          }),
-        );
 
-        if (response.statusCode == 200) {
-          var responseBody = json.decode(response.body);
-          final updatedUsuario = Usuario.fromJson(responseBody);
-          return updatedUsuario;
-        } else {
-          print('Error al actualizar el usuario!');
-          return null;
-        }
-      } catch (e) {
-        print('Error no esperado: $e');
+    try {
+      var response = await http.put(
+        Uri.parse(url),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(usuario.toJson()),
+      );
+
+      if (response.statusCode == 200) {
+        var responseBody = json.decode(response.body);
+        return Usuario.fromJson(responseBody);
+      } else {
+        print('Error al actualizar el usuario');
         return null;
       }
+    } catch (e) {
+      print('Error no esperado: $e');
+      return null;
     }
   }
+
+  
+Future<bool> cambiarContrasena(int idUsuario, String contrasenaActual, String nuevaContrasena) async {
+  String url = "${BASE_URL}usuarios/$idUsuario/cambiar-contrasena";
+
+  try {
+    var response = await http.put(
+      Uri.parse(url),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({
+        "contrasenaActual": contrasenaActual,  // Contraseña actual enviada al backend
+        "nuevaContrasena": nuevaContrasena  // Nueva contraseña enviada al backend
+      }),
+    );
+
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.body}');
+
+    if (response.statusCode == 200) {
+      print('Contraseña actualizada correctamente');
+      return true;
+    } else if (response.statusCode == 400) {
+      print('Error: Contraseña actual incorrecta');
+      return false;
+    } else {
+      print('Error al cambiar la contraseña: ${response.statusCode}');
+      return false;
+    }
+  } catch (e) {
+    print('Error inesperado: $e');
+    return false;
+  }
+}
+
+
 
 Future<Usuario?> register(
     String nombre,
@@ -165,6 +163,53 @@ Future<Usuario?> register(
     } catch (e, stackTrace) {
       print('Error no esperado: $e');
       print(stackTrace);
+    }
+  }
+
+  Future<String?> recuperarContrasena(String dni, String correo) async {
+  String url = "${BASE_URL}usuarios/recuperar-contrasena";  // Ruta a la que hicimos referencia en el backend
+
+  try {
+    var response = await http.post(
+      Uri.parse(url),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({
+        "dni": dni,
+        "correo": correo,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      var responseBody = json.decode(response.body);
+      return responseBody['contrasena'];  // Retornar la contraseña recibida
+    } else {
+      print('Error al recuperar la contraseña: ${response.statusCode}');
+      return null;
+    }
+  } catch (e) {
+    print('Error inesperado: $e');
+    return null;
+  }
+}
+
+
+  Future<List<Usuario>?> getPacientesByPsicologo(int psicologoId) async {
+    String url = "${BASE_URL}psicologo/$psicologoId/pacientes";
+
+    try {
+      var response = await http.get(Uri.parse(url), headers: {"Content-Type": "application/json"});
+
+      if (response.statusCode == 200) {
+        List<dynamic> responseBody = json.decode(response.body);
+        List<Usuario> pacientes = responseBody.map((json) => Usuario.fromJson(json)).toList();
+        return pacientes;
+      } else {
+        print('Error al obtener pacientes: ${response.statusCode}');
+        return null;
+      }
+    } catch (e) {
+      print('Error inesperado: $e');
+      return null;
     }
   }
 }

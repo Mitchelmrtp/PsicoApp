@@ -95,32 +95,31 @@ class RecoverPage extends StatelessWidget {
     );
   }
 
-  Widget _buildRecoverButton(BuildContext context) {
-    return Container(
-      width: 300,
-      height: 60,
-      padding: EdgeInsets.symmetric(horizontal: 40),
-      child: SizedBox(
-        width: double.infinity,
-        child: ElevatedButton(
-          onPressed: () => control.recoverPassword(context),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.white,
-            foregroundColor: Color(0xFF3E4A67),
-            padding: EdgeInsets.symmetric(vertical: 15),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(48),
-            ),
+ Widget _buildRecoverButton(BuildContext context) {
+  return Container(
+    width: 300,
+    height: 60,
+    padding: EdgeInsets.symmetric(horizontal: 40),
+    child: SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: () => control.recoverPassword(context),  // Llama al método con el contexto
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.white,
+          foregroundColor: Color(0xFF3E4A67),
+          padding: EdgeInsets.symmetric(vertical: 15),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(48),
           ),
-          child: Text(
-            'Recuperar contraseña',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+        ),
+        child: Text(
+          'Recuperar contraseña',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ),
-    );
-  }
-}
+    ),
+  );
+}}

@@ -1,39 +1,45 @@
 class Sesion {
-  int id;
-  String horarioId;
-  String fecha;
-  String hora;
-  int doctorId;
-  int pacienteId;
+  final int idSesion;
+  final String fecha;
+  final String hora;
+  final String reporteProgreso;
+  final String reporteEmociones;
+  final int pacienteId;
+  final int psicologoId;
 
   Sesion({
-    required this.id,
-    required this.horarioId,
+    required this.idSesion,
     required this.fecha,
     required this.hora,
-    required this.doctorId,
+    required this.reporteProgreso,
+    required this.reporteEmociones,
     required this.pacienteId,
+    required this.psicologoId,
   });
 
+  // Crear un objeto Sesión desde un JSON
   factory Sesion.fromJson(Map<String, dynamic> json) {
     return Sesion(
-      id: json['id'],
-      horarioId: json['horarioId'],
+      idSesion: json['idSesion'],
       fecha: json['fecha'],
       hora: json['hora'],
-      doctorId: json['doctorId'],
+      reporteProgreso: json['reporteProgreso'],
+      reporteEmociones: json['reporteEmociones'],
       pacienteId: json['pacienteId'],
+      psicologoId: json['psicologoId'],
     );
   }
 
+  // Convertir un objeto Sesión a JSON para enviar al backend
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'horarioId': horarioId,
+      'idSesion': idSesion,
       'fecha': fecha,
       'hora': hora,
-      'doctorId': doctorId,
+      'reporteProgreso': reporteProgreso,
+      'reporteEmociones': reporteEmociones,
       'pacienteId': pacienteId,
+      'psicologoId': psicologoId,
     };
   }
 }

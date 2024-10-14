@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:psicoapp/models/Usuario.dart';
+import 'package:psicoapp/screens/CHATIO/chatwid.dart';
+import 'package:psicoapp/screens/Quest/quest_page.dart';
 import 'package:psicoapp/screens/Solicitar_Cita/Solicitar_Cita_page.dart';
 import 'package:psicoapp/screens/Home/Home_Paciente/prueba.dart';
 import 'package:psicoapp/screens/profile/psicologo/doctor_page.dart';
@@ -28,7 +30,7 @@ class ContactSpecialistPage extends StatelessWidget {
             child: CircleAvatar(
               radius: 15,
               backgroundImage: NetworkImage(
-                  'https://randomuser.me/api/portraits/women/44.jpg'), // Imagen de perfil
+                  'https://randomuser.me/api/portraits/men/44.jpg'), // Imagen de perfil
             ),
           ),
         ],
@@ -78,6 +80,7 @@ class ContactSpecialistPage extends StatelessWidget {
   }
 }
 
+
 class HomePacientePage extends StatefulWidget {
   final Usuario usuarioLogged;
 
@@ -92,6 +95,9 @@ class _HomePacientePageState extends State<HomePacientePage> {
   HomePacienteController control = Get.put(HomePacienteController());
   int _selectedIndex = 0;
 
+  late String roomId;
+  late String userId;
+
   late final List<Widget> _widgetOptions;
 
   bool _notificationsEnabled = true;
@@ -103,10 +109,13 @@ class _HomePacientePageState extends State<HomePacientePage> {
   @override
   void initState() {
     super.initState();
+    userId = usuarioLogged.id.toString(); // Establece el userId basado en el usuario autenticado.
+    roomId = 'chat_${usuarioLogged.id}';  // Genera un roomId único.
+
     // Definir las pantallas a mostrar en el BottomNavigationBar
     _widgetOptions = [
       SolicitarCitaPage(usuarioLogged),
-      PruebaPage(),
+      QuestPage(), // Página de cuestionario
       UsuarioProfilePage(usuario: usuarioLogged), // Perfil del usuario logueado
       DoctorProfilePage(doctorId: usuarioLogged.id) // Se asume que el id del usuario es el del doctor en este caso
     ];
@@ -130,12 +139,10 @@ class _HomePacientePageState extends State<HomePacientePage> {
             // ExpansionTile para Notificaciones
             ExpansionTile(
               leading: Icon(Icons.notifications, color: Colors.white),
-              title: Text('Notificaciones',
-                  style: TextStyle(color: Colors.white)),
+              title: Text('Notificaciones', style: TextStyle(color: Colors.white)),
               children: <Widget>[
                 ListTile(
-                  title: Text('Activar Notificaciones',
-                      style: TextStyle(color: Colors.white)),
+                  title: Text('Activar Notificaciones', style: TextStyle(color: Colors.white)),
                   trailing: Switch(
                     value: _notificationsEnabled,
                     onChanged: (value) {
@@ -144,15 +151,12 @@ class _HomePacientePageState extends State<HomePacientePage> {
                       });
                     },
                   ),
-                  subtitle: Text(_notificationsEnabled ? 'Activado' : 'Desactivado',
-                      style: TextStyle(color: Colors.grey)),
+                  subtitle: Text(_notificationsEnabled ? 'Activado' : 'Desactivado', style: TextStyle(color: Colors.grey)),
                 ),
                 ListTile(
-                  title: Text('Tono de notificación',
-                      style: TextStyle(color: Colors.white)),
+                  title: Text('Tono de notificación', style: TextStyle(color: Colors.white)),
                   trailing: Icon(Icons.arrow_drop_down, color: Colors.white),
-                  subtitle: Text('Latido de corazón',
-                      style: TextStyle(color: Colors.grey)),
+                  subtitle: Text('Latido de corazón', style: TextStyle(color: Colors.grey)),
                   onTap: () {
                     // Implementar la selección de tono
                   },
@@ -167,13 +171,10 @@ class _HomePacientePageState extends State<HomePacientePage> {
                       });
                     },
                   ),
-                  subtitle:
-                      Text(_agendaEnabled ? 'Activado' : 'Desactivado',
-                          style: TextStyle(color: Colors.grey)),
+                  subtitle: Text(_agendaEnabled ? 'Activado' : 'Desactivado', style: TextStyle(color: Colors.grey)),
                 ),
                 ListTile(
-                  title: Text('Monitoreo emocional',
-                      style: TextStyle(color: Colors.white)),
+                  title: Text('Monitoreo emocional', style: TextStyle(color: Colors.white)),
                   trailing: Switch(
                     value: _monitoringEnabled,
                     onChanged: (value) {
@@ -182,9 +183,7 @@ class _HomePacientePageState extends State<HomePacientePage> {
                       });
                     },
                   ),
-                  subtitle: Text(
-                      _monitoringEnabled ? 'Activado' : 'Desactivado',
-                      style: TextStyle(color: Colors.grey)),
+                  subtitle: Text(_monitoringEnabled ? 'Activado' : 'Desactivado', style: TextStyle(color: Colors.grey)),
                 ),
               ],
             ),
@@ -199,8 +198,7 @@ class _HomePacientePageState extends State<HomePacientePage> {
             Divider(color: Colors.white24, thickness: 1), // Línea divisora
             ListTile(
               leading: Icon(Icons.article, color: Colors.white),
-              title: Text('Términos y condiciones',
-                  style: TextStyle(color: Colors.white)),
+              title: Text('Términos y condiciones', style: TextStyle(color: Colors.white)),
               onTap: () {
                 // Acción al pulsar
               },
@@ -208,8 +206,7 @@ class _HomePacientePageState extends State<HomePacientePage> {
             Divider(color: Colors.white24, thickness: 1), // Línea divisora
             ListTile(
               leading: Icon(Icons.privacy_tip, color: Colors.white),
-              title: Text('Política de privacidad',
-                  style: TextStyle(color: Colors.white)),
+              title: Text('Política de privacidad', style: TextStyle(color: Colors.white)),
               onTap: () {
                 // Acción al pulsar
               },
@@ -217,8 +214,7 @@ class _HomePacientePageState extends State<HomePacientePage> {
             Divider(color: Colors.white24, thickness: 1), // Línea divisora
             ListTile(
               leading: Icon(Icons.error_outline, color: Colors.white),
-              title: Text('Informar de un error',
-                  style: TextStyle(color: Colors.white)),
+              title: Text('Informar de un error', style: TextStyle(color: Colors.white)),
               onTap: () {
                 // Acción al pulsar
               },
@@ -251,8 +247,7 @@ class _HomePacientePageState extends State<HomePacientePage> {
                   // Redirigir a la pantalla de inicio de sesión
                   control.goToLogIn(context);
                 },
-                child: Text('Cerrar sesión',
-                    style: TextStyle(color: Colors.white)),
+                child: Text('Cerrar sesión', style: TextStyle(color: Colors.white)),
               ),
             ),
             SizedBox(height: 20), // Espacio adicional para que quede alineado
@@ -334,11 +329,10 @@ class _HomePacientePageState extends State<HomePacientePage> {
             child: CircleAvatar(
               radius: 15,
               backgroundImage: NetworkImage(
-                'https://randomuser.me/api/portraits/women/44.jpg', // URL de la imagen de perfil
+                'https://randomuser.me/api/portraits/men/44.jpg', // URL de la imagen de perfil
               ),
             ),
           ),
-
         ],
       ),
       drawer: _buildDrawer(), // Drawer como menú lateral

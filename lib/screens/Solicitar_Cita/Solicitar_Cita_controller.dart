@@ -8,19 +8,19 @@ class SolicitarCitaController extends GetxController {
   Rx<DateTime?> selectedDateTime = Rx<DateTime?>(null);
   RxString eventTitle = 'Reservar una Cita'.obs;
   RxBool isDayTime = true.obs;
-  RxString motivo = ''.obs; // Variable to store the reason for the appointment
+  RxString motivo = ''.obs;
 
-  // Function to change the icon depending on the time of the day
+  // Aquí cambiamos a RxnInt para permitir valores nulos
+  RxnInt citaId = RxnInt(null); 
+
+  List<String> motivosDisponibles = ['Ansiedad', 'Depresión', 'Baja Autoestima'];
+  RxString selectedMotivo = ''.obs;
+
   void checkDayTime() {
     int currentHour = DateTime.now().hour;
-    if (currentHour >= 6 && currentHour < 18) {
-      isDayTime.value = true;
-    } else {
-      isDayTime.value = false;
-    }
+    isDayTime.value = currentHour >= 6 && currentHour < 18;
   }
 
-  // Method to select date and time
   Future<void> selectDateTime(BuildContext context) async {
     final DateTime? pickedDate = await showDatePicker(
       context: context,
@@ -42,26 +42,33 @@ class SolicitarCitaController extends GetxController {
           pickedTime.minute,
         );
         eventTitle.value = 'Diagnóstico Psicológico - Primera Sesión';
-        showMotivoDialog(context); // Show the dialog to input the reason for the appointment
+        showMotivoDialog(context);
       }
     }
   }
 
-  // Show dialog to input the reason for the appointment
   void showMotivoDialog(BuildContext context) {
-    TextEditingController motivoController = TextEditingController();
-
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Ingrese el motivo de la cita'),
-          content: TextField(
-            controller: motivoController,
-            decoration: InputDecoration(
-              hintText: 'Motivo de la cita',
-            ),
-          ),
+          title: Text('Seleccione el motivo de la cita'),
+          content: Obx(() {
+            return DropdownButton<String>(
+              isExpanded: true,
+              value: selectedMotivo.value.isEmpty ? null : selectedMotivo.value,
+              hint: Text('Seleccione un motivo'),
+              items: motivosDisponibles.map((String motivo) {
+                return DropdownMenuItem<String>(
+                  value: motivo,
+                  child: Text(motivo),
+                );
+              }).toList(),
+              onChanged: (String? newValue) {
+                selectedMotivo.value = newValue ?? '';
+              },
+            );
+          }),
           actions: [
             TextButton(
               child: Text('Cancelar'),
@@ -72,9 +79,13 @@ class SolicitarCitaController extends GetxController {
             TextButton(
               child: Text('Confirmar'),
               onPressed: () {
-                motivo.value = motivoController.text;
+                motivo.value = selectedMotivo.value;
                 Navigator.of(context).pop();
-                submitCita(); // Call the function to submit the appointment
+                if (citaId.value != null) {
+                  updateCita(); // Actualiza la cita existente
+                } else {
+                  submitCita(); // Crea una nueva cita
+                }
               },
             ),
           ],
@@ -83,31 +94,53 @@ class SolicitarCitaController extends GetxController {
     );
   }
 
-  // Function to submit the appointment to the backend
-Future<void> submitCita() async {
-  if (selectedDateTime.value != null && motivo.value.isNotEmpty) {
-    // Obtén la fecha y hora seleccionada
-    DateTime fechaHora = selectedDateTime.value!;
+  // Método para crear una nueva cita
+  Future<void> submitCita() async {
+    if (selectedDateTime.value != null && motivo.value.isNotEmpty) {
+      DateTime fechaHora = selectedDateTime.value!;
+      int pacienteId = user.id;
 
-    // Obtén el ID del paciente automáticamente desde el usuario logueado
-    int pacienteId = user.id; // Aquí el 'user' es el usuario autenticado
+      print({
+        "pacienteId": pacienteId,
+        "fechaHora": fechaHora,
+        "motivo": motivo.value,
+      });
 
-    // Verifica que se obtiene el id del paciente correctamente
-    print("ID del paciente: $pacienteId");
+      bool success = await CitaService().createCita(pacienteId, fechaHora, motivo.value);
 
-    // Llama al método para crear la cita con el ID del paciente
-    bool success = await CitaService().createCita(pacienteId, fechaHora, motivo.value);
-
-    if (success) {
-      Get.snackbar('Éxito', 'Cita reservada correctamente');
-    } else {
-      Get.snackbar('Error', 'No se pudo reservar la cita');
+      if (success) {
+        Get.snackbar('Éxito', 'Cita reservada correctamente');
+      } else {
+        Get.snackbar('Error', 'No se pudo reservar la cita');
+      }
     }
   }
-}
 
-  // Method to reschedule the appointment
+  // Método para actualizar una cita existente
+  Future<void> updateCita() async {
+    if (selectedDateTime.value != null && motivo.value.isNotEmpty && citaId.value != null) {
+      DateTime fechaHora = selectedDateTime.value!;
+      int pacienteId = user.id;
+
+      print({
+        "citaId": citaId.value,
+        "pacienteId": pacienteId,
+        "fechaHora": fechaHora,
+        "motivo": motivo.value,
+      });
+
+      bool success = await CitaService().updateCita(citaId.value!, pacienteId, fechaHora, motivo.value);
+
+      if (success) {
+        Get.snackbar('Éxito', 'Cita reagendada correctamente');
+      } else {
+        Get.snackbar('Error', 'No se pudo reagendar la cita');
+      }
+    }
+  }
+
   Future<void> rescheduleCita(BuildContext context) async {
-    await selectDateTime(context); // Allow the user to pick a new date and time
+    await selectDateTime(context);
   }
 }
+

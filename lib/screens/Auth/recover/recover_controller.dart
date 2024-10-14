@@ -11,18 +11,43 @@ class RecoverController extends GetxController {
   UserService userService = UserService();
 
   // Método para enviar solicitud de recuperación de contraseña
-  void recoverPassword(BuildContext context) async {
-    String email = emailController.text;
-    String dni = dniController.text;
+void recoverPassword(BuildContext context) async {
+  String email = emailController.text;
+  String dni = dniController.text;
 
-    String? result = await userService.reset(dni, email);
+  // Llama al servicio para recuperar la contraseña
+  String? contrasena = await userService.recuperarContrasena(dni, email);
 
-    if (result == "Email enviado con éxito") {
-      message.value = "Se ha enviado un correo de recuperación";
-      messageColor.value = Colors.green;
-    } else {
-      message.value = "No se pudo enviar el correo de recuperación";
-      messageColor.value = Colors.red;
-    }
+  if (contrasena != null) {
+    message.value = "Tu contraseña es: $contrasena";  // Mostrar la contraseña en la UI
+    messageColor.value = Colors.green;
+  } else {
+    message.value = "No se pudo encontrar la contraseña con los datos proporcionados";
+    messageColor.value = Colors.red;
   }
 }
+
+
+
+
+
+// Función para mostrar el diálogo con la contraseña recuperada
+void _showPasswordDialog(BuildContext context, String password) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Contraseña Recuperada'),
+        content: Text('La contraseña es: $password'),
+        actions: <Widget>[
+          TextButton(
+            child: Text('Cerrar'),
+            onPressed: () {
+              Navigator.of(context).pop(); // Cerrar el diálogo
+            },
+          ),
+        ],
+      );
+    },
+  );
+}}

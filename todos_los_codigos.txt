@@ -1,4 +1,52 @@
 
+constants.dart:
+(
+const String BASE_URL = "http://192.168.18.45:3001/";
+
+)
+
+solicitarcita.dart:
+(
+import 'dart:convert';
+
+SolicitarCita solicitarCitaFromJson(String str) => SolicitarCita.fromJson(json.decode(str));
+
+String solicitarCitaToJson(SolicitarCita data) => json.encode(data.toJson());
+
+class SolicitarCita {
+  int idSolicitarCita;
+  DateTime fecha;
+  DateTime hora;
+  String motivo;
+  int pacienteId;
+
+  SolicitarCita({
+    required this.idSolicitarCita,
+    required this.fecha,
+    required this.hora,
+    required this.motivo,
+    required this.pacienteId,
+  });
+
+  factory SolicitarCita.fromJson(Map<String, dynamic> json) => SolicitarCita(
+        idSolicitarCita: json["idSolicitarCita"],
+        fecha: DateTime.parse(json["fecha"]),
+        hora: DateTime.parse(json["hora"]),
+        motivo: json["motivo"],
+        pacienteId: json["pacienteId"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "idSolicitarCita": idSolicitarCita,
+        "fecha": fecha.toIso8601String(),
+        "hora": hora.toIso8601String(),
+        "motivo": motivo,
+        "pacienteId": pacienteId,
+      };
+}
+
+)
+
 Usuario.dart:
 (
 import 'dart:convert';
@@ -195,719 +243,13 @@ class Paciente {
 
 )
 
-signin_page.dart:
-(
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'signin_controller.dart';
-
-class SignInPage extends StatelessWidget {
-  final SignInController control = Get.put(SignInController());
-
-  @override
-  Widget build(BuildContext context) {
-    control.getTerms(); // Cargar los términos y condiciones
-    return Scaffold(
-      backgroundColor: Color.fromRGBO(53, 68, 122, 1), // Color de fondo azul
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildLogo(),
-                _buildForm(context),
-                SizedBox(height: 30),
-                _buildTermsAndConditions(context), // Términos y condiciones
-                SizedBox(height: 30),
-                _buildRegisterButton(context), // Botón para registrarse
-                SizedBox(height: 20),
-                // Mensaje en caso de éxito o error
-                Obx(() => Text(
-                  control.message.value,
-                  style: TextStyle(
-                    color: control.messageColor.value,
-                  ),
-                )),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  // Widget para construir el logo
-  Widget _buildLogo() {
-    return Column(
-      children: [
-        Container(
-          width: 100,
-          height: 100,
-          padding: EdgeInsets.all(0),
-          margin: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(29),
-          ),
-          child: AspectRatio(
-            aspectRatio: 1,
-            child: Image.asset(
-              'assets/images/logo.png', // Cambia esto según la ruta de tu logo
-              fit: BoxFit.contain,
-            ),
-          ),
-        ),
-        SizedBox(height: 20),
-      ],
-    );
-  }
-
-  // Widget para construir el formulario de registro
-  Widget _buildForm(BuildContext context) {
-    return Container(
-      width: 325,
-      padding: EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: Colors.white, // Color de fondo del formulario
-        borderRadius: BorderRadius.circular(48), // Bordes redondeados
-      ),
-      child: Column(
-        children: [
-          _buildTextField("Nombre", control.nombreController),
-          _buildTextField("Apellido", control.apellidoController),
-          _buildTextField("Correo", control.correoController, onChanged: (value) {
-            control.checkCorreoForEspecialidad(); // Verificar si el correo contiene el dominio correcto
-          }),
-          _buildTextField("DNI", control.dniController),
-          _buildTextField("Número de celular", control.numeroCelularController),
-          _buildTextField("Contraseña", control.passwordController),
-          _buildDateField(context), // Campo para la fecha de nacimiento
-          Obx(() {
-  // Mostrar el campo de especialidad si es psicólogo
-            return control.showEspecialidadField.value
-                ? _buildTextField("Especialidad", control.especialidadController)
-                : SizedBox.shrink();
-          }),
-
-        ],
-      ),
-    );
-  }
-
-  // Widget para construir los campos de texto
-  Widget _buildTextField(String label, TextEditingController controller, {Function(String)? onChanged}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Container(
-        width: 250, // Controlamos el ancho del input
-        child: TextField(
-          controller: controller,
-          onChanged: onChanged, // Si se proporciona, llama a la función onChanged cuando el texto cambie
-          decoration: InputDecoration(
-            labelText: label,
-            labelStyle: TextStyle(color: Colors.grey), // Color del texto de la etiqueta
-            enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: const Color.fromRGBO(53, 68, 122, 1), width: 2), // Color de la línea cuando no está enfocado
-            ),
-            focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: const Color.fromRGBO(252, 201, 180, 1), width: 3), // Color de la línea al enfocar
-            ),
-            contentPadding: EdgeInsets.symmetric(vertical: 4, horizontal: 0), // Reducir el padding vertical
-          ),
-          style: TextStyle(color: Colors.black), // Color del texto de entrada
-        ),
-      ),
-    );
-  }
-
-  // Widget para seleccionar la fecha de nacimiento
-  Widget _buildDateField(BuildContext context) {
-    return Obx(() => GestureDetector(
-      onTap: () => control.selectDate(context),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0),
-        child: Container(
-          width: 250,
-          child: InputDecorator(
-            decoration: InputDecoration(
-              labelText: 'Fecha de Nacimiento',
-              labelStyle: TextStyle(color: Colors.grey),
-              enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: const Color.fromRGBO(53, 68, 122, 1), width: 2),
-              ),
-              focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: const Color.fromRGBO(252, 201, 180, 1), width: 3),
-              ),
-            ),
-            child: Text(
-              control.fechaNacimiento.value != null
-                  ? "${control.fechaNacimiento.value!.toLocal()}".split(' ')[0]
-                  : "Seleccionar Fecha",
-              style: TextStyle(color: Colors.black),
-            ),
-          ),
-        ),
-      ),
-    ));
-  }
-
-  // Widget para construir los términos y condiciones
-  Widget _buildTermsAndConditions(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start, // Alineación del checkbox
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center, // Alinear checkbox y texto en el centro
-          children: [
-            // Checkbox personalizado
-            Obx(() => GestureDetector(
-              onTap: () {
-                // Cambiar el valor del checkbox
-                control.termsCheck.value = !control.termsCheck.value;
-              },
-              child: Container(
-                width: 24,
-                height: 24,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: Colors.white, // Color del borde del checkbox
-                    width: 2,
-                  ),
-                ),
-                child: Center(
-                  child: control.termsCheck.value
-                      ? Container(
-                          width: 12,
-                          height: 12,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Color(0xFFFFCC9B4), // Color interno del círculo al presionar
-                          ),
-                        )
-                      : null, // No mostrar nada si no está presionado
-                ),
-              ),
-            )),
-            SizedBox(width: 10), // Espacio entre el checkbox y el texto
-            GestureDetector(
-              onTap: () {
-                _showBottomSheet(context); // Mostrar los términos y condiciones
-              },
-              child: RichText(
-                text: TextSpan(
-                  children: [
-                    TextSpan(
-                      text: "Acepto los ",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    TextSpan(
-                      text: "Términos y condiciones",
-                      style: TextStyle(
-                        decoration: TextDecoration.underline,
-                        color: Colors.lightBlueAccent,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  // Mostrar los términos y condiciones en un BottomSheet
-  void _showBottomSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return Container(
-          height: MediaQuery.of(context).size.height * 0.8,
-          color: Colors.white,
-          padding: EdgeInsets.all(20),
-          child: Column(
-            children: [
-              SizedBox(height: 10),
-              Text(
-                'Términos y Condiciones',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: 10),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Text(control.markdownData.value),
-                ),
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        control.acceptTerms();
-                        Navigator.pop(context);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF2196F3),
-                      ),
-                      child: Text('Acepto'),
-                    ),
-                  ),
-                  SizedBox(width: 10),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF2196F3),
-                      ),
-                      child: Text('No acepto'),
-                    ),
-                  ),
-                ],
-              )
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  // Widget para construir el botón de "Registrarse"
-  Widget _buildRegisterButton(BuildContext context) {
-    return Obx(() => SizedBox(
-      width: 200, // Ancho del botón
-      height: 50, // Altura del botón
-      child: ElevatedButton(
-        onPressed: control.termsCheck.value
-            ? () => control.createAccount(context)
-            : null,
-        style: ElevatedButton.styleFrom(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(48),
-            side: BorderSide(color: Colors.lightBlueAccent, width: 2),
-          ),
-          backgroundColor: Colors.transparent,
-        ),
-        child: Text(
-          "Registrarse",
-          style: TextStyle(
-            fontSize: 18, // Tamaño de la fuente
-            color: Colors.lightBlueAccent,
-          ),
-        ),
-      ),
-    ));
-  }
-}
-
-)
-
-signin_controller.dart:
-(
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:http/http.dart' as http;
-import 'package:psicoapp/models/Usuario.dart';
-import 'package:psicoapp/screens/Auth/Login/login_page.dart';
-import 'package:psicoapp/services/user_service.dart';
-import 'package:psicoapp/services/especialista_service.dart';
-
-class SignInController extends GetxController {
-  // Controladores para los campos del formulario
-  TextEditingController nombreController = TextEditingController();
-  TextEditingController apellidoController = TextEditingController();
-  TextEditingController correoController = TextEditingController();
-  TextEditingController dniController = TextEditingController();
-  TextEditingController numeroCelularController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
-  TextEditingController especialidadController = TextEditingController(); // Controlador para la especialidad
-  Rx<DateTime?> fechaNacimiento = Rx<DateTime?>(null);  // Fecha de nacimiento
-
-  RxString message = ''.obs;  // Mensaje para mostrar en la UI
-  var messageColor = Colors.white.obs;  // Color del mensaje
-  RxBool termsCheck = false.obs;  // Estado del checkbox de términos y condiciones
-  RxBool showEspecialidadField = false.obs;  // Mostrar/ocultar el campo de especialidad
-  RxString markdownData = ''.obs;  // Datos del markdown para términos y condiciones
-
-  UserService userService = UserService();  // Servicio para gestionar usuarios
-  EspecialistaService especialistaService = EspecialistaService();  // Servicio para gestionar especialistas
-
-  // Verificar si el correo contiene el dominio @validamente.cpi.com
-  void checkCorreoForEspecialidad() {
-    if (correoController.text.endsWith('@validamente.cpi.com')) {
-      showEspecialidadField.value = true;
-    } else {
-      showEspecialidadField.value = false;
-    }
-  }
-
-  // Método para crear una cuenta nueva
-  void createAccount(BuildContext context) async {
-    String rol = showEspecialidadField.value ? 'Psicologo' : 'Paciente';
-
-    // Crear usuario en el backend
-    Usuario? userCreated = await userService.register(
-      nombreController.text,
-      apellidoController.text,
-      correoController.text,
-      dniController.text,
-      numeroCelularController.text,
-      passwordController.text,
-      fechaNacimiento.value!,
-      rol,
-      especialidad: showEspecialidadField.value ? especialidadController.text : null,  // Enviar especialidad solo si es psicólogo
-    );
-
-    // Mostrar error si la especialidad está vacía pero el rol es Psicologo
-    if (rol == 'Psicologo' && (especialidadController.text.trim().isEmpty || userCreated == null)) {
-      message.value = 'La especialidad es requerida para psicólogos';
-      messageColor.value = Colors.red;
-      return;
-    }
-
-    if (userCreated != null) {
-      // Redirige a la página de login si todo fue bien
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => LoginPage(),
-        ),
-      );
-    } else {
-      message.value = 'Error al crear la cuenta';
-      messageColor.value = Colors.red;
-    }
-  }
-
-
-  // Seleccionar la fecha de nacimiento
-  Future<void> selectDate(BuildContext context) async {
-    DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
-    );
-    if (picked != null && picked != fechaNacimiento.value) {
-      fechaNacimiento.value = picked;
-    }
-  }
-
-  // Obtener términos y condiciones desde un archivo Markdown
-  Future<void> getTerms() async {
-    final response = await http.get(Uri.parse(
-        'https://raw.githubusercontent.com/mukeshsolanki/MarkdownView-Android/main/README.md')); // Ruta de ejemplo, debes cambiarla por la que necesites
-    if (response.statusCode == 200) {
-      markdownData.value = response.body; // Asignar el contenido Markdown al observable
-    } else {
-      markdownData.value = 'Error al cargar términos y condiciones';
-    }
-  }
-
-  // Aceptar los términos y condiciones
-  void acceptTerms() {
-    termsCheck.value = true;
-  }
-}
-
-)
-
-login_page.dart:
-(
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'login_controller.dart';
-
-class LoginPage extends StatelessWidget {
-  LoginController control = Get.put(LoginController());
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Color.fromRGBO(53, 68, 122, 1), // Color de fondo azul
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Logo del sistema
-                _buildLogo(),
-                SizedBox(height: 40),
-                // Formulario de Login
-                _buildForm(context),
-                SizedBox(height: 20),
-                // Botón para iniciar sesión
-                _buildLoginButton(context),
-                SizedBox(height: 20),
-                // Botón para registrarse
-                _buildRegisterButton(context),
-                SizedBox(height: 60),
-                // Opción de recuperar contraseña
-                GestureDetector(
-                  onTap: () => control.goToRecover(context),
-                  child: Text(
-                    '¿Olvidaste tu contraseña?',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.white,
-                      decoration: TextDecoration.underline,
-                    ),
-                  ),
-                ),
-                SizedBox(height: 20),
-                // Mensaje de error o éxito
-                Obx(() => control.message.isNotEmpty
-                    ? Text(
-                        control.message.value,
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: control.messageColor.value,
-                        ),
-                      )
-                    : SizedBox.shrink()),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLogo() {
-    return Container(
-      width: 100,
-      height: 100,
-      padding: EdgeInsets.all(0),
-      margin: EdgeInsets.symmetric(horizontal: 40, vertical: 20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(29),
-      ),
-      child: AspectRatio(
-        aspectRatio: 1,
-        child: Image.asset(
-          'assets/images/logo.png', // Asegúrate de tener el logo en la ruta correcta
-          fit: BoxFit.contain,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildForm(BuildContext context) {
-    return Container(
-      width: 290,
-      height: 165,
-      padding: EdgeInsets.all(20),
-      margin: EdgeInsets.symmetric(horizontal: 40),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(48),
-      ),
-      child: Column(
-        children: [
-          // Campo de texto para el correo
-          _buildTextField(
-            controller: control.userController,
-            labelText: 'Correo',
-          ),
-          SizedBox(height: 10),
-          // Campo de texto para la contraseña
-          _buildTextField(
-            controller: control.passController,
-            labelText: 'Contraseña',
-            obscureText: true,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String labelText,
-    bool obscureText = false,
-  }) {
-    return Container(
-      width: 210,
-      child: TextField(
-        controller: controller,
-        obscureText: obscureText,
-        style: TextStyle(fontSize: 16),
-        decoration: InputDecoration(
-          labelText: labelText,
-          labelStyle: TextStyle(color: Colors.grey),
-          enabledBorder: UnderlineInputBorder(
-            borderSide: BorderSide(
-              color: const Color.fromRGBO(53, 68, 122, 1),
-              width: 2.0,
-            ),
-          ),
-          focusedBorder: UnderlineInputBorder(
-            borderSide: BorderSide(
-              color: const Color.fromRGBO(252, 201, 180, 1),
-              width: 3.0,
-            ),
-          ),
-          contentPadding: EdgeInsets.only(
-            bottom: -10, // Acerca el labelText al underline
-            left: 0,
-            right: 0,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLoginButton(BuildContext context) {
-    return Container(
-      width: 300,
-      height: 60,
-      padding: EdgeInsets.symmetric(horizontal: 40),
-      child: SizedBox(
-        width: double.infinity,
-        child: ElevatedButton(
-          onPressed: () => control.login(context),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.white,
-            foregroundColor: Color(0xFF3E4A67),
-            padding: EdgeInsets.symmetric(vertical: 15),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(48),
-            ),
-          ),
-          child: Text(
-            'Iniciar sesión',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildRegisterButton(BuildContext context) {
-    return Container(
-      width: 300,
-      height: 60,
-      padding: EdgeInsets.symmetric(horizontal: 40),
-      child: SizedBox(
-        width: double.infinity,
-        child: OutlinedButton(
-          onPressed: () => control.goToSignIn(context),
-          style: OutlinedButton.styleFrom(
-            foregroundColor: Colors.white,
-            side: BorderSide(color: Colors.white),
-            padding: EdgeInsets.symmetric(vertical: 15),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(48),
-            ),
-          ),
-          child: Text(
-            'Registrarse',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-)
-
-login_controller.dart:
-(
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:psicoapp/screens/Auth/Recover/recover_page.dart';
-import 'package:psicoapp/screens/Auth/Signin/signin_page.dart';
-import 'package:psicoapp/screens/Home/Home_Paciente/homepaciente_page.dart';
-import 'package:psicoapp/models/Usuario.dart';
-import 'package:psicoapp/screens/Home/Home_Psicologo/homepsicologo_page.dart';
-import 'package:psicoapp/services/user_service.dart';
-
-class LoginController extends GetxController {
-  TextEditingController userController = TextEditingController();
-  TextEditingController passController = TextEditingController();
-  RxString message = 'primer mensaje'.obs;
-  var messageColor = Colors.white.obs;
-  UserService userService = UserService();
-
-void login(BuildContext context) async {
-  String user = userController.text;
-  String password = passController.text;
-
-  // Obtener el usuario autenticado desde el servicio de usuario
-  Usuario? userValidated = await userService.validate(user, password);
-
-  if (userValidated == null) {
-    message.value = 'Error en el servidor';
-    messageColor.value = Colors.red;
-  } else if (userValidated.id == 0) {
-    message.value = 'Usuario o contraseña incorrectos';
-    messageColor.value = Colors.red;
-  } else {
-    // Redirigir dependiendo del rol del usuario
-    if (userValidated.rol == 'Psicologo') {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => HomePsicologoPage(usuarioLogged: userValidated),
-        ),
-      );
-    } else {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => HomePacientePage(usuarioLogged: userValidated),
-        ),
-      );
-    }
-  }
-}
-
-
-
-
-  // Redirigir al registro
-  void goToSignIn(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => SignInPage()),
-    );
-  }
-
-  // Redirigir a la recuperación de contraseña
-  void goToRecover(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => RecoverPage()),
-    );
-  }
-}
-
-)
-
 homepaciente_page.dart:
 (
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:psicoapp/models/Usuario.dart';
+import 'package:psicoapp/screens/CHATIO/chatwid.dart';
+import 'package:psicoapp/screens/Cuestionario/CuestionarioPage.dart';
 import 'package:psicoapp/screens/Solicitar_Cita/Solicitar_Cita_page.dart';
 import 'package:psicoapp/screens/Home/Home_Paciente/prueba.dart';
 import 'package:psicoapp/screens/profile/psicologo/doctor_page.dart';
@@ -999,6 +341,9 @@ class _HomePacientePageState extends State<HomePacientePage> {
   HomePacienteController control = Get.put(HomePacienteController());
   int _selectedIndex = 0;
 
+  late String roomId;
+  late String userId;
+
   late final List<Widget> _widgetOptions;
 
   bool _notificationsEnabled = true;
@@ -1010,10 +355,13 @@ class _HomePacientePageState extends State<HomePacientePage> {
   @override
   void initState() {
     super.initState();
+    userId = usuarioLogged.id.toString(); // Establece el userId basado en el usuario autenticado.
+    roomId = 'chat_${usuarioLogged.id}';  // Genera un roomId único.
+
     // Definir las pantallas a mostrar en el BottomNavigationBar
     _widgetOptions = [
       SolicitarCitaPage(usuarioLogged),
-      PruebaPage(),
+      CuestionarioScreen(),
       UsuarioProfilePage(usuario: usuarioLogged), // Perfil del usuario logueado
       DoctorProfilePage(doctorId: usuarioLogged.id) // Se asume que el id del usuario es el del doctor en este caso
     ];
@@ -1277,193 +625,619 @@ class HomePacienteController extends GetxController {
 
 )
 
-userprofile_controller.dart:
-(
-import 'package:get/get.dart';
-import 'package:psicoapp/models/Usuario.dart';
-
-class UsuarioProfileController extends GetxController {
-  final Rx<Usuario> usuario;
-
-  UsuarioProfileController(this.usuario);
-
-  // Método para actualizar la información del perfil
-  void updateProfile(String nombre, String apellido, String correo, String telefono, String? nuevaContrasena) {
-    usuario.update((user) {
-      user?.nombre = nombre;
-      user?.apellido = apellido;
-      user?.correo = correo;
-      user?.numeroCelular = telefono;
-      
-      // Actualizar la contraseña solo si se proporciona una nueva
-      if (nuevaContrasena != null && nuevaContrasena.isNotEmpty) {
-        user?.contrasena = nuevaContrasena;
-      }
-    });
-  }
-}
-
-)
-
-userprofile_page.dart:
+Solicitar_Cita_page.dart:
 (
 import 'package:flutter/material.dart';
+import 'dart:math';
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:psicoapp/models/Usuario.dart';
-import 'package:psicoapp/screens/profile/paciente/edituserprofile.dart';
+import 'package:psicoapp/screens/Solicitar_Cita/Solicitar_Cita_controller.dart';
+ // Importa el modelo de Usuario
 
-class UsuarioProfilePage extends StatefulWidget {
-  final Usuario usuario;
+class SolicitarCitaPage extends StatelessWidget {
+  final SolicitarCitaController control = Get.put(SolicitarCitaController());
+  final Usuario usuarioLogged; // Declaración de la variable usuario
 
-  const UsuarioProfilePage({Key? key, required this.usuario}) : super(key: key);
-
-  @override
-  _UsuarioProfilePageState createState() => _UsuarioProfilePageState();
-}
-
-class _UsuarioProfilePageState extends State<UsuarioProfilePage> {
-  late Usuario usuario; // Para mantener los datos actualizados del usuario
-
-  @override
-  void initState() {
-    super.initState();
-    usuario = widget.usuario; // Inicializar con los datos actuales
-  }
-
-  void _navigateAndEditProfile() async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => EditProfilePage(usuario: usuario),
-      ),
-    );
-
-    if (result != null && result is Usuario) {
-      // Actualizar los datos del usuario con los nuevos datos
-      setState(() {
-        usuario = result; // Recibe el usuario actualizado y refresca la vista
-      });
-    }
+  // Constructor que recibe el usuario
+  SolicitarCitaPage(this.usuarioLogged) {
+    control.user = usuarioLogged; // Asignar el usuario al controlador
   }
 
   @override
   Widget build(BuildContext context) {
+    // Revisamos si es de día o de noche
+    control.checkDayTime();
+
     return Scaffold(
-      backgroundColor: Color(0xFF112244), // Fondo azul oscuro
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Color(0xFF112244), // Fondo azul oscuro
-        automaticallyImplyLeading: true,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        centerTitle: true, // Centrar carita sonriente
-        title: Icon(
-          Icons.sentiment_satisfied_alt, // Carita sonriente
-          color: Colors.white,
-          size: 28,
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.edit, color: Colors.white),
-            onPressed: _navigateAndEditProfile, // Llamar al método de edición
-          ),
-        ],
-        bottom: PreferredSize(
-          preferredSize: Size.fromHeight(4.0),
-          child: Container(
-            color: Colors.white, // Línea divisora blanca
-            height: 1.0,
-          ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Aquí construimos el calendario de eventos
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Obx(() {
+                // Si no hay ninguna cita registrada
+                if (control.selectedDateTime.value == null) {
+                  return buildReservationCard(context);
+                } else {
+                  return buildScheduledCard(context);
+                }
+              }),
+            ),
+
+            // Parte 3: Gráfica circular y emociones
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Gráfico circular (emoción principal)
+                  Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      Container(
+                        width: 180,
+                        height: 180,
+                        child: CustomPaint(
+                          painter: PieChartPainter(),
+                        ),
+                      ),
+                      Column(
+                        children: [
+                          Icon(Icons.sentiment_dissatisfied, size: 100, color: Colors.blue),
+                         
+                        ],
+                      ),
+                    ],
+                  ),
+                  SizedBox(width: 20),
+                  // Lista de emociones
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      buildEmotionIndicator(Colors.green, '15%', Icons.sentiment_very_satisfied),
+                      SizedBox(height: 8),
+                      buildEmotionIndicator(Colors.yellow, '10%', Icons.sentiment_satisfied),
+                      SizedBox(height: 8),
+                      buildEmotionIndicator(Colors.purple, '22%', Icons.sentiment_neutral),
+                      SizedBox(height: 8),
+                      buildEmotionIndicator(Colors.blue, '30%', Icons.sentiment_dissatisfied),
+                      SizedBox(height: 8),
+                      buildEmotionIndicator(Colors.red, '5%', Icons.sentiment_very_dissatisfied),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 24),
+
+            // Gráfico circular de progreso
+            Center(
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    width: 180,
+                    height: 180,
+                    child: CircularProgressIndicator(
+                      value: 0.8,
+                      strokeWidth: 12,
+                      backgroundColor: Colors.grey[300],
+                      color: Colors.blue,
+                    ),
+                  ),
+                  Column(
+                    children: [
+                      Text(
+                        "80%",
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue,
+                        ),
+                      ),
+                      Text(
+                        "Nivel de progreso",
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 24),
+
+// Parte 4: Sugerencias para ti (Tarjetas)
+Padding(
+  padding: const EdgeInsets.all(16.0),
+  child: Text(
+    'Sugerencias para ti',
+    style: TextStyle(
+      fontSize: 20,
+      fontWeight: FontWeight.bold,
+      color: Colors.black87,
+    ),
+  ),
+),
+Center(  // Asegura que todo el contenido esté centrado
+  child: Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+    child: Wrap(
+      alignment: WrapAlignment.center, // Centra los elementos dentro del Wrap
+      spacing: 16,
+      runSpacing: 16,
+      children: [
+        buildSuggestionCard('Tips para un ambiente laboral sano',
+            'assets/images/laboral.png'),
+        buildSuggestionCard(
+            'Ser productivo sin desgastarse', 'assets/images/productivo.png'),
+        buildSuggestionCard('Importancia de una buena alimentación',
+            'assets/images/alimentacion.png'),
+        buildSuggestionCard(
+            '5 tips de meditación para tu tiempo libre', 'assets/images/meditacion.png'),
+      ],
+    ),
+  ),
+),
+SizedBox(height: 24),
+
+          ],
         ),
       ),
-      body: Center(
+    );
+  }
+
+  // Widget para la tarjeta de reserva de cita
+  Widget buildReservationCard(BuildContext context) {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      elevation: 4,
+      child: Container(
+        padding: EdgeInsets.all(16),
+        width: 350,
+        height: 200,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.yellow[100]!, Colors.white],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+          borderRadius: BorderRadius.circular(16),
+        ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            SizedBox(height: 20),
-            // Imagen de perfil centrada y de mayor tamaño
-            Stack(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               children: [
-                CircleAvatar(
-                  radius: 60, // Tamaño más grande para la imagen de perfil
-                  backgroundImage: NetworkImage(
-                      'https://randomuser.me/api/portraits/men/44.jpg'), // Puedes cambiar la imagen aquí
-                ),
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  child: IconButton(
-                    icon: Icon(Icons.camera_alt, color: Colors.white),
-                    onPressed: () {
-                      // Implementar acción de tomar o seleccionar foto
-                    },
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Sin Eventos',
+                        style: TextStyle(
+                          color: Colors.black87,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        'CPI-Válidamente',
+                        style: TextStyle(
+                          color: Colors.black54,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
+                Obx(() => Icon(
+                      control.isDayTime.value ? Icons.wb_sunny : Icons.nights_stay,
+                      color: control.isDayTime.value ? Colors.yellow : Colors.blue,
+                      size: 50,
+                    )),
               ],
             ),
-            SizedBox(height: 20),
-            // Nombre del usuario, más grande y centrado
-            Text(
-              '${usuario.nombre} ${usuario.apellido}', // Cambiado para incluir nombre y apellido
-              style: TextStyle(
-                fontSize: 22,
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: 10),
-            // DNI del usuario
-            Text(
-              "DNI",
-              style: TextStyle(color: Colors.grey, fontSize: 14),
-            ),
-            Text(
-              usuario.DNI,
-              style: TextStyle(
-                fontSize: 18,
-                color: Colors.white,
-              ),
-            ),
-            SizedBox(height: 10),
-            // Correo electrónico
-            Text(
-              "Correo electrónico",
-              style: TextStyle(color: Colors.grey, fontSize: 14),
-            ),
-            Text(
-              usuario.correo,
-              style: TextStyle(
-                fontSize: 18,
-                color: Colors.white,
-              ),
-            ),
-            SizedBox(height: 10),
-            // Número de celular
-            Text(
-              "Número de celular",
-              style: TextStyle(color: Colors.grey, fontSize: 14),
-            ),
-            Text(
-              usuario.numeroCelular,
-              style: TextStyle(
-                fontSize: 18,
-                color: Colors.white,
-              ),
+            Spacer(),
+            Center(
+              child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                  onPressed: () => control.selectDateTime(context), // Llamar a la selección de fecha, hora y motivo
+                  child: Text('Reservar Cita'),
+                ),
+
             ),
           ],
         ),
       ),
     );
   }
+
+  // Widget para la tarjeta de la cita agendada
+  Widget buildScheduledCard(BuildContext context) {
+    return Card(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      elevation: 4,
+      child: Container(
+        padding: EdgeInsets.all(16),
+        width: 350,
+        height: 200,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.yellow[100]!, Colors.white],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Diagnóstico Psicológico',
+                        style: TextStyle(
+                          color: Colors.black87,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        'Primera Sesión',
+                        style: TextStyle(
+                          color: Colors.black54,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Obx(() => Icon(
+                      control.isDayTime.value ? Icons.wb_sunny : Icons.nights_stay,
+                      color: control.isDayTime.value ? Colors.yellow : Colors.blue,
+                      size: 50,
+                    )),
+              ],
+            ),
+            Spacer(),
+            Text(
+              DateFormat('hh:mm a').format(control.selectedDateTime.value!),
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Spacer(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(
+                  onPressed: () => control.rescheduleCita(context),
+                  child: Text(
+                    'Reagendar',
+                    style: TextStyle(color: Colors.black),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () {
+                    control.selectedDateTime.value = null;
+                  },
+                  child: Text(
+                    'Cancelar Cita',
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Widget para crear una tarjeta de sugerencia
+Widget buildSuggestionCard(String title, String assetPath) {
+  return Container(
+    width: 160,
+    height: 160,
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(12),
+      image: DecorationImage(
+        image: AssetImage(assetPath),
+        fit: BoxFit.cover,
+      ),
+    ),
+    child: Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        gradient: LinearGradient(
+          colors: [Colors.black54, Colors.transparent],
+          begin: Alignment.bottomCenter,
+          end: Alignment.topCenter,
+        ),
+      ),
+      padding: EdgeInsets.all(8),
+      alignment: Alignment.bottomCenter, // Centrar contenido en la parte inferior
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.end, // Asegura que el texto esté en la parte inferior
+        crossAxisAlignment: CrossAxisAlignment.center, // Centra horizontalmente
+        children: [
+          Spacer(), // Añade espacio flexible para empujar el contenido hacia el centro
+          Text(
+            title,
+            textAlign: TextAlign.center, // Centra el texto
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+  // Widget para crear un ítem de emoción
+  Widget buildEmotionIndicator(Color color, String percentage, IconData icon) {
+    return Row(
+      children: [
+        Icon(icon, color: color, size: 24),
+        SizedBox(width: 8),
+        Text(
+          percentage,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// Clase personalizada para la gráfica circular de emociones
+class PieChartPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    double width = size.width;
+    double height = size.height;
+    Offset center = Offset(width / 2, height / 2);
+    double radius = width / 2;
+
+    Paint paint = Paint()..style = PaintingStyle.stroke..strokeWidth = 30;
+
+    double startAngle = -90;
+    final angles = [54, 36, 79.2, 108, 72]; // Los porcentajes convertidos en ángulos
+
+    // Colores que representan las emociones
+    final colors = [
+      Colors.green,
+      Colors.yellow,
+      Colors.purple,
+      Colors.blue,
+      Colors.red,
+    ];
+
+    for (int i = 0; i < angles.length; i++) {
+      final sweepAngle = angles[i].toDouble(); // Conversión explícita a double
+      paint.color = colors[i];
+      canvas.drawArc(
+        Rect.fromCircle(center: center, radius: radius),
+        degreesToRadians(startAngle),
+        degreesToRadians(sweepAngle),
+        false,
+        paint,
+      );
+      startAngle += sweepAngle;
+    }
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return false;
+  }
+
+  double degreesToRadians(double degrees) {
+    return degrees * (pi / 180);
+  }
 }
 
 )
 
-psicologogeneral_service.dart:
+Solicitar_Cita_controller.dart:
 (
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:psicoapp/models/Usuario.dart';
+import 'package:psicoapp/services/solicitarcita_service.dart'; // Importamos el servicio de citas
+
+class SolicitarCitaController extends GetxController {
+  Usuario user = Usuario.empty();
+  Rx<DateTime?> selectedDateTime = Rx<DateTime?>(null);
+  RxString eventTitle = 'Reservar una Cita'.obs;
+  RxBool isDayTime = true.obs;
+  RxString motivo = ''.obs;
+
+  // Aquí cambiamos a RxnInt para permitir valores nulos
+  RxnInt citaId = RxnInt(null); 
+
+  List<String> motivosDisponibles = ['Ansiedad', 'Depresión', 'Baja Autoestima'];
+  RxString selectedMotivo = ''.obs;
+
+  void checkDayTime() {
+    int currentHour = DateTime.now().hour;
+    isDayTime.value = currentHour >= 6 && currentHour < 18;
+  }
+
+  Future<void> selectDateTime(BuildContext context) async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2101),
+    );
+    if (pickedDate != null) {
+      final TimeOfDay? pickedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.now(),
+      );
+      if (pickedTime != null) {
+        selectedDateTime.value = DateTime(
+          pickedDate.year,
+          pickedDate.month,
+          pickedDate.day,
+          pickedTime.hour,
+          pickedTime.minute,
+        );
+        eventTitle.value = 'Diagnóstico Psicológico - Primera Sesión';
+        showMotivoDialog(context);
+      }
+    }
+  }
+
+  void showMotivoDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Seleccione el motivo de la cita'),
+          content: Obx(() {
+            return DropdownButton<String>(
+              isExpanded: true,
+              value: selectedMotivo.value.isEmpty ? null : selectedMotivo.value,
+              hint: Text('Seleccione un motivo'),
+              items: motivosDisponibles.map((String motivo) {
+                return DropdownMenuItem<String>(
+                  value: motivo,
+                  child: Text(motivo),
+                );
+              }).toList(),
+              onChanged: (String? newValue) {
+                selectedMotivo.value = newValue ?? '';
+              },
+            );
+          }),
+          actions: [
+            TextButton(
+              child: Text('Cancelar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Confirmar'),
+              onPressed: () {
+                motivo.value = selectedMotivo.value;
+                Navigator.of(context).pop();
+                if (citaId.value != null) {
+                  updateCita(); // Actualiza la cita existente
+                } else {
+                  submitCita(); // Crea una nueva cita
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Método para crear una nueva cita
+  Future<void> submitCita() async {
+    if (selectedDateTime.value != null && motivo.value.isNotEmpty) {
+      DateTime fechaHora = selectedDateTime.value!;
+      int pacienteId = user.id;
+
+      print({
+        "pacienteId": pacienteId,
+        "fechaHora": fechaHora,
+        "motivo": motivo.value,
+      });
+
+      bool success = await CitaService().createCita(pacienteId, fechaHora, motivo.value);
+
+      if (success) {
+        Get.snackbar('Éxito', 'Cita reservada correctamente');
+      } else {
+        Get.snackbar('Error', 'No se pudo reservar la cita');
+      }
+    }
+  }
+
+
+   Future<void> agendarCita(
+      DateTime fecha, TimeOfDay hora, String motivo, int pacienteId) async {
+    String url = "http://tu_backend_url/api/agendarCitaYGenerarSesion"; // URL del backend
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
+          "fecha": fecha.toIso8601String(),
+          "hora": hora.format(context), // Formatear la hora
+          "motivo": motivo,
+          "Paciente_idPaciente": pacienteId,
+        }),
+      );
+
+      if (response.statusCode == 201) {
+        print('Cita y sesión creadas: ${response.body}');
+      } else {
+        print('Error: ${response.body}');
+      }
+    } catch (e) {
+      print('Error al agendar cita: $e');
+    }
+  }
+
+  // Método para actualizar una cita existente
+  Future<void> updateCita() async {
+    if (selectedDateTime.value != null && motivo.value.isNotEmpty && citaId.value != null) {
+      DateTime fechaHora = selectedDateTime.value!;
+      int pacienteId = user.id;
+
+      print({
+        "citaId": citaId.value,
+        "pacienteId": pacienteId,
+        "fechaHora": fechaHora,
+        "motivo": motivo.value,
+      });
+
+      bool success = await CitaService().updateCita(citaId.value!, pacienteId, fechaHora, motivo.value);
+
+      if (success) {
+        Get.snackbar('Éxito', 'Cita reagendada correctamente');
+      } else {
+        Get.snackbar('Error', 'No se pudo reagendar la cita');
+      }
+    }
+  }
+
+  Future<void> rescheduleCita(BuildContext context) async {
+    await selectDateTime(context);
+  }
+}
+
 
 )
 
@@ -1638,6 +1412,26 @@ Future<Usuario?> register(
       print(stackTrace);
     }
   }
+
+  Future<List<Usuario>?> getPacientesByPsicologo(int psicologoId) async {
+    String url = "${BASE_URL}psicologo/$psicologoId/pacientes";
+
+    try {
+      var response = await http.get(Uri.parse(url), headers: {"Content-Type": "application/json"});
+
+      if (response.statusCode == 200) {
+        List<dynamic> responseBody = json.decode(response.body);
+        List<Usuario> pacientes = responseBody.map((json) => Usuario.fromJson(json)).toList();
+        return pacientes;
+      } else {
+        print('Error al obtener pacientes: ${response.statusCode}');
+        return null;
+      }
+    } catch (e) {
+      print('Error inesperado: $e');
+      return null;
+    }
+  }
 }
 
 )
@@ -1709,6 +1503,66 @@ class PacienteService {
       return null;
     }
   }
+}
+
+)
+
+solicitarcita_service.dart:
+(
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:psicoapp/configs/constants.dart';
+
+class CitaService {
+  Future<bool> createCita(int pacienteId, DateTime fechaHora, String motivo) async {
+    // Convierte la fecha a formato ISO si es necesario
+    String fechaHoraString = fechaHora.toIso8601String();
+    String url = "${BASE_URL}citas";
+
+    // Enviar solicitud POST para crear la cita
+    var response = await http.post(
+      Uri.parse(url),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({
+        "pacienteId": pacienteId, // Enviar el ID del paciente al backend
+        "fechaHora": fechaHoraString,
+        "motivo": motivo,
+      }),
+    );
+
+      if (response.statusCode == 201) {
+        return true;
+      } else {
+        print('Error: ${response.body}'); // Muestra el error en la consola
+        return false;
+      }
+
+  }
+
+  Future<bool> updateCita(int citaId, int pacienteId, DateTime fechaHora, String motivo) async {
+    String fechaHoraString = fechaHora.toIso8601String();
+    String url = "${BASE_URL}citas/$citaId"; // Usamos el ID de la cita para la actualización
+
+    // Enviar solicitud PUT para actualizar la cita
+    var response = await http.put(
+      Uri.parse(url),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({
+        "pacienteId": pacienteId,
+        "fechaHora": fechaHoraString,
+        "motivo": motivo,
+      }),
+    );
+
+    if (response.statusCode == 200) { // 200 significa que la actualización fue exitosa
+      return true;
+    } else {
+      print('Error: ${response.body}');
+      return false;
+    }
+  }
+
+  
 }
 
 )
