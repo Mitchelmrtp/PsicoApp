@@ -116,7 +116,7 @@ class _HomePacientePageState extends State<HomePacientePage> {
     _widgetOptions = [
       SolicitarCitaPage(usuarioLogged),
       QuestPage(), // Página de cuestionario
-      UsuarioProfilePage(usuario: usuarioLogged), // Perfil del usuario logueado
+      ChatPage(roomId: roomId, userId: userId), // Perfil del usuario logueado
       DoctorProfilePage(doctorId: usuarioLogged.id) // Se asume que el id del usuario es el del doctor en este caso
     ];
   }
@@ -266,7 +266,7 @@ class _HomePacientePageState extends State<HomePacientePage> {
           label: '',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.photo_camera_outlined), // Ícono de cámara
+          icon: Icon(Icons.question_mark), // Ícono de cámara
           label: '',
         ),
         BottomNavigationBarItem(
