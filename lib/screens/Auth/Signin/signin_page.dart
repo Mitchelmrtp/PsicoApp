@@ -7,9 +7,9 @@ class SignInPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    control.getTerms(); // Cargar los términos y condiciones
+    control.getTerms();
     return Scaffold(
-      backgroundColor: Color.fromRGBO(53, 68, 122, 1), // Color de fondo azul
+      backgroundColor: Color.fromRGBO(53, 68, 122, 1), 
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -20,11 +20,11 @@ class SignInPage extends StatelessWidget {
                 _buildLogo(),
                 _buildForm(context),
                 SizedBox(height: 30),
-                _buildTermsAndConditions(context), // Términos y condiciones
+                _buildTermsAndConditions(context),
                 SizedBox(height: 30),
-                _buildRegisterButton(context), // Botón para registrarse
+                _buildRegisterButton(context), 
                 SizedBox(height: 20),
-                // Mensaje en caso de éxito o error
+
                 Obx(() => Text(
                   control.message.value,
                   style: TextStyle(
@@ -39,7 +39,6 @@ class SignInPage extends StatelessWidget {
     );
   }
 
-  // Widget para construir el logo
   Widget _buildLogo() {
     return Column(
       children: [
@@ -55,7 +54,7 @@ class SignInPage extends StatelessWidget {
           child: AspectRatio(
             aspectRatio: 1,
             child: Image.asset(
-              'assets/images/logo.png', // Cambia esto según la ruta de tu logo
+              'assets/images/logo.png',
               fit: BoxFit.contain,
             ),
           ),
@@ -65,14 +64,13 @@ class SignInPage extends StatelessWidget {
     );
   }
 
-  // Widget para construir el formulario de registro
   Widget _buildForm(BuildContext context) {
     return Container(
       width: 325,
       padding: EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: Colors.white, // Color de fondo del formulario
-        borderRadius: BorderRadius.circular(48), // Bordes redondeados
+        color: Colors.white, 
+        borderRadius: BorderRadius.circular(48), 
       ),
       child: Column(
         children: [
@@ -82,9 +80,8 @@ class SignInPage extends StatelessWidget {
           _buildTextField("DNI", control.dniController),
           _buildTextField("Número de celular", control.numeroCelularController),
           _buildTextField("Contraseña", control.passwordController),
-          _buildDateField(context), // Campo para la fecha de nacimiento
+          _buildDateField(context), 
          
-           // Dropdown para seleccionar el rol
           Obx(() => Container(
             width: 250,
             padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -111,7 +108,6 @@ class SignInPage extends StatelessWidget {
           )),
          
           Obx(() {
-  // Mostrar el campo de especialidad si es psicólogo
             return control.showEspecialidadField.value
                 ? _buildTextField("Especialidad", control.especialidadController)
                 : SizedBox.shrink();
@@ -122,27 +118,26 @@ class SignInPage extends StatelessWidget {
     );
   }
 
-  // Widget para construir los campos de texto
   Widget _buildTextField(String label, TextEditingController controller, {Function(String)? onChanged}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Container(
-        width: 250, // Controlamos el ancho del input
+        width: 250, 
         child: TextField(
           controller: controller,
-          onChanged: onChanged, // Si se proporciona, llama a la función onChanged cuando el texto cambie
+          onChanged: onChanged, 
           decoration: InputDecoration(
             labelText: label,
-            labelStyle: TextStyle(color: Colors.grey), // Color del texto de la etiqueta
+            labelStyle: TextStyle(color: Colors.grey), 
             enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: const Color.fromRGBO(53, 68, 122, 1), width: 2), // Color de la línea cuando no está enfocado
+              borderSide: BorderSide(color: const Color.fromRGBO(53, 68, 122, 1), width: 2), 
             ),
             focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: const Color.fromRGBO(252, 201, 180, 1), width: 3), // Color de la línea al enfocar
+              borderSide: BorderSide(color: const Color.fromRGBO(252, 201, 180, 1), width: 3),
             ),
-            contentPadding: EdgeInsets.symmetric(vertical: 4, horizontal: 0), // Reducir el padding vertical
+            contentPadding: EdgeInsets.symmetric(vertical: 4, horizontal: 0),
           ),
-          style: TextStyle(color: Colors.black), // Color del texto de entrada
+          style: TextStyle(color: Colors.black), 
         ),
       ),
     );
@@ -182,15 +177,13 @@ class SignInPage extends StatelessWidget {
   // Widget para construir los términos y condiciones
   Widget _buildTermsAndConditions(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.start, // Alineación del checkbox
+      mainAxisAlignment: MainAxisAlignment.start, 
       children: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.center, // Alinear checkbox y texto en el centro
+          mainAxisAlignment: MainAxisAlignment.center, 
           children: [
-            // Checkbox personalizado
             Obx(() => GestureDetector(
               onTap: () {
-                // Cambiar el valor del checkbox
                 control.termsCheck.value = !control.termsCheck.value;
               },
               child: Container(
@@ -199,7 +192,7 @@ class SignInPage extends StatelessWidget {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: Colors.white, // Color del borde del checkbox
+                    color: Colors.white, 
                     width: 2,
                   ),
                 ),
@@ -210,17 +203,17 @@ class SignInPage extends StatelessWidget {
                           height: 12,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: Color(0xFFFFCC9B4), // Color interno del círculo al presionar
+                            color: Color(0xFFFFCC9B4),
                           ),
                         )
-                      : null, // No mostrar nada si no está presionado
+                      : null,
                 ),
               ),
             )),
-            SizedBox(width: 10), // Espacio entre el checkbox y el texto
+            SizedBox(width: 10), 
             GestureDetector(
               onTap: () {
-                _showBottomSheet(context); // Mostrar los términos y condiciones
+                _showBottomSheet(context);
               },
               child: RichText(
                 text: TextSpan(
@@ -309,8 +302,8 @@ class SignInPage extends StatelessWidget {
   // Widget para construir el botón de "Registrarse"
   Widget _buildRegisterButton(BuildContext context) {
     return Obx(() => SizedBox(
-      width: 200, // Ancho del botón
-      height: 50, // Altura del botón
+      width: 200,
+      height: 50, 
       child: ElevatedButton(
         onPressed: control.termsCheck.value
             ? () => control.createAccount(context)
@@ -325,7 +318,7 @@ class SignInPage extends StatelessWidget {
         child: Text(
           "Registrarse",
           style: TextStyle(
-            fontSize: 18, // Tamaño de la fuente
+            fontSize: 18, 
             color: Colors.lightBlueAccent,
           ),
         ),

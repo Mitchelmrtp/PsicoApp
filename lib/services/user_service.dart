@@ -105,9 +105,9 @@ Future<Usuario?> register(
     String contrasena,
     DateTime fechaNacimiento,
     String rol, {
-    String? especialidad,  // Parámetro opcional
+    String? especialidad,  
   }) async {
-    String url = "${BASE_URL}usuarios";  // Ruta para crear un usuario
+    String url = "${BASE_URL}usuarios";  
 
     try {
       var response = await http.post(
@@ -122,7 +122,7 @@ Future<Usuario?> register(
           "contrasena": contrasena,
           "fecha_nacimiento": fechaNacimiento.toIso8601String(),
           "rol": rol,
-          if (especialidad != null) "especialidad": especialidad,  // Enviar especialidad solo si es psicólogo
+          if (especialidad != null) "especialidad": especialidad,  
         }),
       );
 
@@ -167,7 +167,7 @@ Future<Usuario?> register(
   }
 
   Future<String?> recuperarContrasena(String dni, String correo) async {
-  String url = "${BASE_URL}usuarios/recuperar-contrasena";  // Ruta a la que hicimos referencia en el backend
+  String url = "${BASE_URL}usuarios/recuperar-contrasena";  
 
   try {
     var response = await http.post(
@@ -181,7 +181,7 @@ Future<Usuario?> register(
 
     if (response.statusCode == 200) {
       var responseBody = json.decode(response.body);
-      return responseBody['contrasena'];  // Retornar la contraseña recibida
+      return responseBody['contrasena']; 
     } else {
       print('Error al recuperar la contraseña: ${response.statusCode}');
       return null;

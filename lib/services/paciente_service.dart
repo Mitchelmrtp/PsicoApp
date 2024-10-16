@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:psicoapp/configs/constants.dart';
-import 'package:psicoapp/models/Paciente.dart'; // Modelo de Paciente
+import 'package:psicoapp/models/Paciente.dart';
 
 class PacienteService {
   Future<Paciente?> getPacienteByUsuarioId(int usuarioId) async {
-    String url = "${BASE_URL}pacientes/$usuarioId"; // Endpoint para obtener el paciente por usuarioId
+    String url = "${BASE_URL}pacientes/$usuarioId"; 
 
     try {
       var response = await http.get(
@@ -15,7 +15,7 @@ class PacienteService {
 
       if (response.statusCode == 200) {
         var responseBody = json.decode(response.body);
-        return Paciente.fromJson(responseBody); // Devuelve el objeto Paciente
+        return Paciente.fromJson(responseBody); 
       } else {
         print('Error al obtener el paciente: ${response.statusCode}');
         return null;

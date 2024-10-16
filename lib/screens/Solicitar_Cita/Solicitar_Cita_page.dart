@@ -4,20 +4,19 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:psicoapp/models/Usuario.dart';
 import 'package:psicoapp/screens/Solicitar_Cita/Solicitar_Cita_controller.dart';
- // Importa el modelo de Usuario
 
 class SolicitarCitaPage extends StatelessWidget {
   final SolicitarCitaController control = Get.put(SolicitarCitaController());
-  final Usuario usuarioLogged; // Declaración de la variable usuario
+  final Usuario usuarioLogged; 
 
   // Constructor que recibe el usuario
   SolicitarCitaPage(this.usuarioLogged) {
-    control.user = usuarioLogged; // Asignar el usuario al controlador
+    control.user = usuarioLogged; 
   }
 
   @override
   Widget build(BuildContext context) {
-    // Revisamos si es de día o de noche
+
     control.checkDayTime();
 
     return Scaffold(
@@ -25,11 +24,11 @@ class SolicitarCitaPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Aquí construimos el calendario de eventos
+
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Obx(() {
-                // Si no hay ninguna cita registrada
+
                 if (control.selectedDateTime.value == null) {
                   return buildReservationCard(context);
                 } else {
@@ -38,13 +37,13 @@ class SolicitarCitaPage extends StatelessWidget {
               }),
             ),
 
-            // Parte 3: Gráfica circular y emociones
+
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Gráfico circular (emoción principal)
+
                   Stack(
                     alignment: Alignment.center,
                     children: [
@@ -64,7 +63,7 @@ class SolicitarCitaPage extends StatelessWidget {
                     ],
                   ),
                   SizedBox(width: 20),
-                  // Lista de emociones
+
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -84,7 +83,7 @@ class SolicitarCitaPage extends StatelessWidget {
             ),
             SizedBox(height: 24),
 
-            // Gráfico circular de progreso
+
             Center(
               child: Stack(
                 alignment: Alignment.center,
@@ -123,7 +122,7 @@ class SolicitarCitaPage extends StatelessWidget {
             ),
             SizedBox(height: 24),
 
-// Parte 4: Sugerencias para ti (Tarjetas)
+
 Padding(
   padding: const EdgeInsets.all(16.0),
   child: Text(
@@ -135,11 +134,11 @@ Padding(
     ),
   ),
 ),
-Center(  // Asegura que todo el contenido esté centrado
+Center(  
   child: Padding(
     padding: const EdgeInsets.symmetric(horizontal: 16.0),
     child: Wrap(
-      alignment: WrapAlignment.center, // Centra los elementos dentro del Wrap
+      alignment: WrapAlignment.center, 
       spacing: 16,
       runSpacing: 16,
       children: [
@@ -345,15 +344,15 @@ Widget buildSuggestionCard(String title, String assetPath) {
         ),
       ),
       padding: EdgeInsets.all(8),
-      alignment: Alignment.bottomCenter, // Centrar contenido en la parte inferior
+      alignment: Alignment.bottomCenter,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.end, // Asegura que el texto esté en la parte inferior
-        crossAxisAlignment: CrossAxisAlignment.center, // Centra horizontalmente
+        mainAxisAlignment: MainAxisAlignment.end, 
+        crossAxisAlignment: CrossAxisAlignment.center, 
         children: [
-          Spacer(), // Añade espacio flexible para empujar el contenido hacia el centro
+          Spacer(), 
           Text(
             title,
-            textAlign: TextAlign.center, // Centra el texto
+            textAlign: TextAlign.center, 
             style: TextStyle(
               color: Colors.white,
               fontSize: 14,
@@ -397,9 +396,8 @@ class PieChartPainter extends CustomPainter {
     Paint paint = Paint()..style = PaintingStyle.stroke..strokeWidth = 30;
 
     double startAngle = -90;
-    final angles = [54, 36, 79.2, 108, 72]; // Los porcentajes convertidos en ángulos
+    final angles = [54, 36, 79.2, 108, 72]; 
 
-    // Colores que representan las emociones
     final colors = [
       Colors.green,
       Colors.yellow,
@@ -409,7 +407,7 @@ class PieChartPainter extends CustomPainter {
     ];
 
     for (int i = 0; i < angles.length; i++) {
-      final sweepAngle = angles[i].toDouble(); // Conversión explícita a double
+      final sweepAngle = angles[i].toDouble(); 
       paint.color = colors[i];
       canvas.drawArc(
         Rect.fromCircle(center: center, radius: radius),

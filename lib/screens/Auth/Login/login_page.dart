@@ -8,7 +8,7 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromRGBO(53, 68, 122, 1), // Color de fondo azul
+      backgroundColor: Color.fromRGBO(53, 68, 122, 1), 
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -16,19 +16,15 @@ class LoginPage extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Logo del sistema
                 _buildLogo(),
                 SizedBox(height: 40),
-                // Formulario de Login
                 _buildForm(context),
                 SizedBox(height: 20),
-                // Botón para iniciar sesión
                 _buildLoginButton(context),
                 SizedBox(height: 20),
-                // Botón para registrarse
                 _buildRegisterButton(context),
                 SizedBox(height: 60),
-                // Opción de recuperar contraseña
+
                 GestureDetector(
                   onTap: () => control.goToRecover(context),
                   child: Text(
@@ -41,7 +37,7 @@ class LoginPage extends StatelessWidget {
                   ),
                 ),
                 SizedBox(height: 20),
-                // Mensaje de error o éxito
+
                 Obx(() => control.message.isNotEmpty
                     ? Text(
                         control.message.value,
@@ -73,7 +69,7 @@ class LoginPage extends StatelessWidget {
       child: AspectRatio(
         aspectRatio: 1,
         child: Image.asset(
-          'assets/images/logo.png', // Asegúrate de tener el logo en la ruta correcta
+          'assets/images/logo.png', 
           fit: BoxFit.contain,
         ),
       ),
@@ -92,13 +88,11 @@ class LoginPage extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // Campo de texto para el correo
           _buildTextField(
             controller: control.userController,
             labelText: 'Correo',
           ),
           SizedBox(height: 10),
-          // Campo de texto para la contraseña
           _buildTextField(
             controller: control.passController,
             labelText: 'Contraseña',

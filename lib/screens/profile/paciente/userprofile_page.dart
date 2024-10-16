@@ -29,9 +29,9 @@ class _UsuarioProfilePageState extends State<UsuarioProfilePage> {
     );
 
     if (result != null && result is Usuario) {
-      // Actualizar los datos del usuario con los nuevos datos
+
       setState(() {
-        usuario = result; // Recibe el usuario actualizado y refresca la vista
+        usuario = result; 
       });
     }
   }
@@ -39,10 +39,10 @@ class _UsuarioProfilePageState extends State<UsuarioProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF112244), // Fondo azul oscuro
+      backgroundColor: Color(0xFF112244), 
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Color(0xFF112244), // Fondo azul oscuro
+        backgroundColor: Color(0xFF112244),
         automaticallyImplyLeading: true,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.white),
@@ -50,22 +50,22 @@ class _UsuarioProfilePageState extends State<UsuarioProfilePage> {
             Navigator.pop(context);
           },
         ),
-        centerTitle: true, // Centrar carita sonriente
+        centerTitle: true, 
         title: Icon(
-          Icons.sentiment_satisfied_alt, // Carita sonriente
+          Icons.sentiment_satisfied_alt, 
           color: Colors.white,
           size: 28,
         ),
         actions: [
           IconButton(
             icon: Icon(Icons.edit, color: Colors.white),
-            onPressed: _navigateAndEditProfile, // Llamar al método de edición
+            onPressed: _navigateAndEditProfile,
           ),
         ],
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(4.0),
           child: Container(
-            color: Colors.white, // Línea divisora blanca
+            color: Colors.white, 
             height: 1.0,
           ),
         ),
@@ -75,13 +75,12 @@ class _UsuarioProfilePageState extends State<UsuarioProfilePage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             SizedBox(height: 20),
-            // Imagen de perfil centrada y de mayor tamaño
             Stack(
               children: [
                 CircleAvatar(
-                  radius: 60, // Tamaño más grande para la imagen de perfil
+                  radius: 60, 
                   backgroundImage: NetworkImage(
-                      'https://randomuser.me/api/portraits/men/44.jpg'), // Puedes cambiar la imagen aquí
+                      'https://randomuser.me/api/portraits/men/44.jpg'), 
                 ),
                 Positioned(
                   bottom: 0,
@@ -89,16 +88,15 @@ class _UsuarioProfilePageState extends State<UsuarioProfilePage> {
                   child: IconButton(
                     icon: Icon(Icons.camera_alt, color: Colors.white),
                     onPressed: () {
-                      // Implementar acción de tomar o seleccionar foto
                     },
                   ),
                 ),
               ],
             ),
             SizedBox(height: 20),
-            // Nombre del usuario, más grande y centrado
+
             Text(
-              '${usuario.nombre} ${usuario.apellido}', // Cambiado para incluir nombre y apellido
+              '${usuario.nombre} ${usuario.apellido}', 
               style: TextStyle(
                 fontSize: 22,
                 color: Colors.white,
@@ -106,7 +104,7 @@ class _UsuarioProfilePageState extends State<UsuarioProfilePage> {
               ),
             ),
             SizedBox(height: 10),
-            // DNI del usuario
+
             Text(
               "DNI",
               style: TextStyle(color: Colors.grey, fontSize: 14),
@@ -119,7 +117,7 @@ class _UsuarioProfilePageState extends State<UsuarioProfilePage> {
               ),
             ),
             SizedBox(height: 10),
-            // Correo electrónico
+
             Text(
               "Correo electrónico",
               style: TextStyle(color: Colors.grey, fontSize: 14),
@@ -132,7 +130,7 @@ class _UsuarioProfilePageState extends State<UsuarioProfilePage> {
               ),
             ),
             SizedBox(height: 10),
-            // Número de celular
+
             Text(
               "Número de celular",
               style: TextStyle(color: Colors.grey, fontSize: 14),

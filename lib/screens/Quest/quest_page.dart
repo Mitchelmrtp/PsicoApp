@@ -1,4 +1,3 @@
-// quest_page.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:psicoapp/screens/Quest/quest_controller.dart';
@@ -9,21 +8,20 @@ class QuestPage extends StatefulWidget {
 }
 
 class _QuestPageState extends State<QuestPage> {
-  final int idPaciente = 1; // Cambia esto por el ID real del paciente
-  List<int?> respuestas = []; // Lista para almacenar las respuestas seleccionadas
-  int puntajeTotal = 0; // Variable para almacenar el puntaje total
-  String nivelDepresion = ""; // Almacena el nivel de depresión
+  final int idPaciente = 1; 
+  List<int?> respuestas = []; 
+  int puntajeTotal = 0; 
+  String nivelDepresion = ""; 
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final cuestionarioController = Provider.of<CuestionarioController>(context, listen: false);
-      cuestionarioController.fetchPreguntas(); // Cargar preguntas al iniciar
+      cuestionarioController.fetchPreguntas();
     });
   }
 
-  // Función para calcular el puntaje total basado en las respuestas
   void calcularPuntajeTotal() {
     puntajeTotal = respuestas.whereType<int>().fold(0, (sum, item) => sum + item);
 
@@ -39,13 +37,11 @@ class _QuestPageState extends State<QuestPage> {
       nivelDepresion = "Grave";
     }
 
-    // Si el nivel es Moderadamente grave o Grave, mostrar alerta de urgencia
     if (nivelDepresion == "Moderadamente grave" || nivelDepresion == "Grave") {
       mostrarAlertaUrgente();
     }
   }
 
-  // Mostrar alerta para solicitar cita de forma urgente
   void mostrarAlertaUrgente() {
     showDialog(
       context: context,
@@ -73,11 +69,11 @@ class _QuestPageState extends State<QuestPage> {
         builder: (context, cuestionarioController, child) {
           final preguntas = cuestionarioController.preguntas;
           if (respuestas.length != preguntas.length) {
-            respuestas = List.filled(preguntas.length, null); // Inicializa la lista de respuestas
+            respuestas = List.filled(preguntas.length, null); 
           }
 
           return preguntas.isEmpty
-              ? Center(child: CircularProgressIndicator()) // Indicador de carga
+              ? Center(child: CircularProgressIndicator()) 
               : ListView.builder(
                   itemCount: preguntas.length,
                   itemBuilder: (context, index) {
@@ -101,7 +97,7 @@ class _QuestPageState extends State<QuestPage> {
                                     groupValue: respuestas[index],
                                     onChanged: (value) {
                                       setState(() {
-                                        respuestas[index] = value; // Captura la respuesta seleccionada
+                                        respuestas[index] = value; 
                                       });
                                     },
                                   ),
@@ -119,7 +115,7 @@ class _QuestPageState extends State<QuestPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          // Asegurarse de que todas las respuestas estén completas
+
           if (respuestas.contains(null)) {
             showDialog(
               context: context,
@@ -137,12 +133,12 @@ class _QuestPageState extends State<QuestPage> {
             return;
           }
 
-          // Calcular el puntaje total y el nivel de depresión
+
           calcularPuntajeTotal();
 
           final cuestionarioController = Provider.of<CuestionarioController>(context, listen: false);
           try {
-            // Enviar respuestas
+
             await cuestionarioController.enviarRespuestas(idPaciente, respuestas.cast<int>());
             showDialog(
               context: context,

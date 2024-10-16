@@ -14,30 +14,27 @@ class SignInController extends GetxController {
   TextEditingController dniController = TextEditingController();
   TextEditingController numeroCelularController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-  TextEditingController especialidadController = TextEditingController(); // Controlador para la especialidad
-  Rx<DateTime?> fechaNacimiento = Rx<DateTime?>(null);  // Fecha de nacimiento
+  TextEditingController especialidadController = TextEditingController(); 
+  Rx<DateTime?> fechaNacimiento = Rx<DateTime?>(null);  
 
-  RxString message = ''.obs;  // Mensaje para mostrar en la UI
-  var messageColor = Colors.white.obs;  // Color del mensaje
-  RxBool termsCheck = false.obs;  // Estado del checkbox de términos y condiciones
-  RxBool showEspecialidadField = false.obs;  // Mostrar/ocultar el campo de especialidad
-  RxString markdownData = ''.obs;  // Datos del markdown para términos y condiciones
+  RxString message = ''.obs;  
+  var messageColor = Colors.white.obs;  
+  RxBool termsCheck = false.obs;  
+  RxBool showEspecialidadField = false.obs;  
+  RxString markdownData = ''.obs;  
   RxString selectedRole = 'Paciente'.obs;
 
-  UserService userService = UserService();  // Servicio para gestionar usuarios
-  EspecialistaService especialistaService = EspecialistaService();  // Servicio para gestionar especialistas
+  UserService userService = UserService();  
+  EspecialistaService especialistaService = EspecialistaService(); 
 
-  // Verificar si el correo contiene el dominio @validamente.cpi.com
   void changeRole(String role) {
     selectedRole.value = role;
     showEspecialidadField.value = role == 'Psicólogo';
   }
 
-  // Método para crear una cuenta nueva
   void createAccount(BuildContext context) async {
     String rol = selectedRole.value;
 
-    // Crear usuario en el backend
     Usuario? userCreated = await userService.register(
       nombreController.text,
       apellidoController.text,
@@ -47,10 +44,9 @@ class SignInController extends GetxController {
       passwordController.text,
       fechaNacimiento.value!,
       rol,
-      especialidad: showEspecialidadField.value ? especialidadController.text : null,  // Enviar especialidad solo si es psicólogo
+      especialidad: showEspecialidadField.value ? especialidadController.text : null,  
     );
 
-    // Mostrar error si la especialidad está vacía pero el rol es Psicologo
     if (rol == 'Psicologo' && (especialidadController.text.trim().isEmpty || userCreated == null)) {
       message.value = 'La especialidad es requerida para psicólogos';
       messageColor.value = Colors.red;
@@ -58,7 +54,6 @@ class SignInController extends GetxController {
     }
 
     if (userCreated != null) {
-      // Redirige a la página de login si todo fue bien
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -72,7 +67,6 @@ class SignInController extends GetxController {
   }
 
 
-  // Seleccionar la fecha de nacimiento
   Future<void> selectDate(BuildContext context) async {
     DateTime? picked = await showDatePicker(
       context: context,
@@ -85,18 +79,16 @@ class SignInController extends GetxController {
     }
   }
 
-  // Obtener términos y condiciones desde un archivo Markdown
   Future<void> getTerms() async {
     final response = await http.get(Uri.parse(
-        'https://raw.githubusercontent.com/mukeshsolanki/MarkdownView-Android/main/README.md')); // Ruta de ejemplo, debes cambiarla por la que necesites
+        'https://raw.githubusercontent.com/mukeshsolanki/MarkdownView-Android/main/README.md')); 
     if (response.statusCode == 200) {
-      markdownData.value = response.body; // Asignar el contenido Markdown al observable
+      markdownData.value = response.body; 
     } else {
       markdownData.value = 'Error al cargar términos y condiciones';
     }
   }
 
-  // Aceptar los términos y condiciones
   void acceptTerms() {
     termsCheck.value = true;
   }

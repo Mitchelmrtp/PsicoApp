@@ -4,7 +4,6 @@ import 'package:psicoapp/models/Usuario.dart';
 import 'package:psicoapp/screens/CHATIO/chatwid.dart';
 import 'package:psicoapp/screens/Quest/quest_page.dart';
 import 'package:psicoapp/screens/Solicitar_Cita/Solicitar_Cita_page.dart';
-import 'package:psicoapp/screens/Home/Home_Paciente/prueba.dart';
 import 'package:psicoapp/screens/profile/psicologo/doctor_page.dart';
 import 'package:psicoapp/screens/profile/paciente/userprofile_page.dart';
 import 'homepaciente_controller.dart';
@@ -13,14 +12,14 @@ class ContactSpecialistPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF112244), // Fondo azul oscuro
+      backgroundColor: Color(0xFF112244), 
       appBar: AppBar(
-        elevation: 0, // Sin sombra
-        backgroundColor: Color(0xFF112244), // Fondo del AppBar igual al fondo
-        automaticallyImplyLeading: true, // Mostrar el ícono de retroceso
-        centerTitle: true, // Centrar el ícono
+        elevation: 0, 
+        backgroundColor: Color(0xFF112244),
+        automaticallyImplyLeading: true, 
+        centerTitle: true, 
         title: Icon(
-          Icons.sentiment_satisfied_alt, // Ícono de la carita
+          Icons.sentiment_satisfied_alt, 
           color: Colors.white,
           size: 28,
         ),
@@ -30,7 +29,7 @@ class ContactSpecialistPage extends StatelessWidget {
             child: CircleAvatar(
               radius: 15,
               backgroundImage: NetworkImage(
-                  'https://randomuser.me/api/portraits/men/44.jpg'), // Imagen de perfil
+                  'https://randomuser.me/api/portraits/men/44.jpg'), 
             ),
           ),
         ],
@@ -47,28 +46,28 @@ class ContactSpecialistPage extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 40), // Espacio entre el texto y los botones
+            SizedBox(height: 40), 
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green, // Fondo verde
-                foregroundColor: Colors.white, // Texto blanco
-                minimumSize: Size(200, 50), // Tamaño del botón
+                backgroundColor: Colors.green, 
+                foregroundColor: Colors.white, 
+                minimumSize: Size(200, 50), 
               ),
               onPressed: () {
-                // Acción al confirmar
+
                 print("Confirmar contacto con especialista");
               },
               child: Text('CONFIRMAR'),
             ),
-            SizedBox(height: 20), // Espacio entre los botones
+            SizedBox(height: 20), 
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red, // Fondo rojo
-                foregroundColor: Colors.white, // Texto blanco
-                minimumSize: Size(200, 50), // Tamaño del botón
+                backgroundColor: Colors.red, 
+                foregroundColor: Colors.white, 
+                minimumSize: Size(200, 50), 
               ),
               onPressed: () {
-                // Regresar a la pantalla anterior
+
                 Navigator.pop(context);
               },
               child: Text('CANCELAR'),
@@ -109,15 +108,15 @@ class _HomePacientePageState extends State<HomePacientePage> {
   @override
   void initState() {
     super.initState();
-    userId = usuarioLogged.id.toString(); // Establece el userId basado en el usuario autenticado.
-    roomId = 'chat_${usuarioLogged.id}';  // Genera un roomId único.
+    userId = usuarioLogged.id.toString(); 
+    roomId = 'chat_${usuarioLogged.id}';  
 
-    // Definir las pantallas a mostrar en el BottomNavigationBar
+
     _widgetOptions = [
       SolicitarCitaPage(usuarioLogged),
-      QuestPage(), // Página de cuestionario
-      ChatPage(roomId: roomId, userId: userId), // Perfil del usuario logueado
-      DoctorProfilePage(doctorId: usuarioLogged.id) // Se asume que el id del usuario es el del doctor en este caso
+      QuestPage(), 
+      ChatPage(roomId: roomId, userId: userId), 
+      DoctorProfilePage(doctorId: usuarioLogged.id) 
     ];
   }
 
@@ -127,16 +126,16 @@ class _HomePacientePageState extends State<HomePacientePage> {
     });
   }
 
-  // Crear el Drawer (menú lateral)
+
   Widget _buildDrawer() {
     return Drawer(
       child: Container(
-        color: Color(0xFF112244), // Color de fondo del Drawer
+        color: Color(0xFF112244), 
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            SizedBox(height: 20), // Espacio en la parte superior
-            // ExpansionTile para Notificaciones
+            SizedBox(height: 20), 
+
             ExpansionTile(
               leading: Icon(Icons.notifications, color: Colors.white),
               title: Text('Notificaciones', style: TextStyle(color: Colors.white)),
@@ -158,7 +157,7 @@ class _HomePacientePageState extends State<HomePacientePage> {
                   trailing: Icon(Icons.arrow_drop_down, color: Colors.white),
                   subtitle: Text('Latido de corazón', style: TextStyle(color: Colors.grey)),
                   onTap: () {
-                    // Implementar la selección de tono
+
                   },
                 ),
                 ListTile(
@@ -187,49 +186,50 @@ class _HomePacientePageState extends State<HomePacientePage> {
                 ),
               ],
             ),
-            Divider(color: Colors.white24, thickness: 1), // Línea divisora
+            Divider(color: Colors.white24, thickness: 1), 
             ListTile(
               leading: Icon(Icons.security, color: Colors.white),
               title: Text('Seguridad', style: TextStyle(color: Colors.white)),
               onTap: () {
-                // Acción al pulsar
+
               },
             ),
-            Divider(color: Colors.white24, thickness: 1), // Línea divisora
+            Divider(color: Colors.white24, thickness: 1), 
             ListTile(
               leading: Icon(Icons.article, color: Colors.white),
               title: Text('Términos y condiciones', style: TextStyle(color: Colors.white)),
               onTap: () {
-                // Acción al pulsar
+
               },
             ),
-            Divider(color: Colors.white24, thickness: 1), // Línea divisora
+            Divider(color: Colors.white24, thickness: 1),
+            
             ListTile(
               leading: Icon(Icons.privacy_tip, color: Colors.white),
               title: Text('Política de privacidad', style: TextStyle(color: Colors.white)),
               onTap: () {
-                // Acción al pulsar
+
               },
             ),
-            Divider(color: Colors.white24, thickness: 1), // Línea divisora
+            Divider(color: Colors.white24, thickness: 1), 
             ListTile(
               leading: Icon(Icons.error_outline, color: Colors.white),
               title: Text('Informar de un error', style: TextStyle(color: Colors.white)),
               onTap: () {
-                // Acción al pulsar
+
               },
             ),
-            Spacer(), // Empuja el contenido hacia arriba para dejar espacio
+            Spacer(),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red, // Fondo rojo para el botón
-                  foregroundColor: Colors.white, // Texto en blanco
-                  minimumSize: Size(double.infinity, 50), // Tamaño ancho completo
+                  backgroundColor: Colors.red, 
+                  foregroundColor: Colors.white, 
+                  minimumSize: Size(double.infinity, 50), 
                 ),
                 onPressed: () {
-                  // Redirigir a la pantalla de confirmación
+
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -240,48 +240,47 @@ class _HomePacientePageState extends State<HomePacientePage> {
                 child: Text('Contacta a un especialista'),
               ),
             ),
-            SizedBox(height: 20), // Espacio debajo del botón
+            SizedBox(height: 20), 
             Center(
               child: TextButton(
                 onPressed: () {
-                  // Redirigir a la pantalla de inicio de sesión
+
                   control.goToLogIn(context);
                 },
                 child: Text('Cerrar sesión', style: TextStyle(color: Colors.white)),
               ),
             ),
-            SizedBox(height: 20), // Espacio adicional para que quede alineado
+            SizedBox(height: 20), 
           ],
         ),
       ),
     );
   }
 
-  // Actualizar los iconos del BottomNavigationBar
   Widget _navigationBottom() {
     return BottomNavigationBar(
       items: const <BottomNavigationBarItem>[
         BottomNavigationBarItem(
-          icon: Icon(Icons.star_border), // Ícono de estrella
+          icon: Icon(Icons.star_border),
           label: '',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.question_mark), // Ícono de cámara
+          icon: Icon(Icons.question_mark), 
           label: '',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.chat_bubble_outline), // Ícono de chat
+          icon: Icon(Icons.chat_bubble_outline), 
           label: '',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.person_outline), // Ícono de perfil
+          icon: Icon(Icons.person_outline), 
           label: '',
         ),
       ],
       currentIndex: _selectedIndex,
-      selectedItemColor: Color(0XFFF26F29), // Color seleccionado
-      unselectedItemColor: Colors.black, // Color de los íconos no seleccionados
-      backgroundColor: Colors.white, // Fondo blanco
+      selectedItemColor: Color(0XFFF26F29), 
+      unselectedItemColor: Colors.black,
+      backgroundColor: Colors.white, 
       showSelectedLabels: false, // Sin etiquetas
       showUnselectedLabels: false, // Sin etiquetas
       onTap: _onItemTapped,
