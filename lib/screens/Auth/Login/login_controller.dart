@@ -10,7 +10,7 @@ import 'package:psicoapp/services/user_service.dart';
 class LoginController extends GetxController {
   TextEditingController userController = TextEditingController();
   TextEditingController passController = TextEditingController();
-  RxString message = 'primer mensaje'.obs;
+  RxString message = ''.obs;
   var messageColor = Colors.white.obs;
   UserService userService = UserService();
 
