@@ -12,13 +12,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => CuestionarioController()), // Añade el CuestionarioController aquí
-        // Si tienes otros controladores, los añades aquí de manera similar
+        ChangeNotifierProvider(create: (_) => CuestionarioController()), 
+        
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Login',
-        home: LoginPage(), // Página de inicio
+        home: LoginPage(), 
       ),
     );
   }
