@@ -14,7 +14,8 @@ class CuestionarioController with ChangeNotifier {
   Future<void> fetchPreguntas() async {
     try {
       List<dynamic> data = await _cuestionarioService.getAllCuestionarios();
-      _preguntas = data.map((item) => CuestionarioModel.fromJson(item)).toList();
+      _preguntas =
+          data.map((item) => CuestionarioModel.fromJson(item)).toList();
       notifyListeners();
     } catch (e) {
       print('Error al obtener las preguntas: $e');

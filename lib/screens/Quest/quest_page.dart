@@ -8,22 +8,24 @@ class QuestPage extends StatefulWidget {
 }
 
 class _QuestPageState extends State<QuestPage> {
-  final int idPaciente = 1; 
-  List<int?> respuestas = []; 
-  int puntajeTotal = 0; 
-  String nivelDepresion = ""; 
+  final int idPaciente = 1;
+  List<int?> respuestas = [];
+  int puntajeTotal = 0;
+  String nivelDepresion = "";
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final cuestionarioController = Provider.of<CuestionarioController>(context, listen: false);
+      final cuestionarioController =
+          Provider.of<CuestionarioController>(context, listen: false);
       cuestionarioController.fetchPreguntas();
     });
   }
 
   void calcularPuntajeTotal() {
-    puntajeTotal = respuestas.whereType<int>().fold(0, (sum, item) => sum + item);
+    puntajeTotal =
+        respuestas.whereType<int>().fold(0, (sum, item) => sum + item);
 
     if (puntajeTotal <= 4) {
       nivelDepresion = "Mínimo";
@@ -69,11 +71,11 @@ class _QuestPageState extends State<QuestPage> {
         builder: (context, cuestionarioController, child) {
           final preguntas = cuestionarioController.preguntas;
           if (respuestas.length != preguntas.length) {
-            respuestas = List.filled(preguntas.length, null); 
+            respuestas = List.filled(preguntas.length, null);
           }
 
           return preguntas.isEmpty
-              ? Center(child: CircularProgressIndicator()) 
+              ? Center(child: CircularProgressIndicator())
               : ListView.builder(
                   itemCount: preguntas.length,
                   itemBuilder: (context, index) {
@@ -97,7 +99,7 @@ class _QuestPageState extends State<QuestPage> {
                                     groupValue: respuestas[index],
                                     onChanged: (value) {
                                       setState(() {
-                                        respuestas[index] = value; 
+                                        respuestas[index] = value;
                                       });
                                     },
                                   ),
@@ -115,13 +117,13 @@ class _QuestPageState extends State<QuestPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-
           if (respuestas.contains(null)) {
             showDialog(
               context: context,
               builder: (context) => AlertDialog(
                 title: Text('Error'),
-                content: Text('Por favor, responde todas las preguntas antes de enviar.'),
+                content: Text(
+                    'Por favor, responde todas las preguntas antes de enviar.'),
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.of(context).pop(),
@@ -133,13 +135,13 @@ class _QuestPageState extends State<QuestPage> {
             return;
           }
 
-
           calcularPuntajeTotal();
 
-          final cuestionarioController = Provider.of<CuestionarioController>(context, listen: false);
+          final cuestionarioController =
+              Provider.of<CuestionarioController>(context, listen: false);
           try {
-
-            await cuestionarioController.enviarRespuestas(idPaciente, respuestas.cast<int>());
+            await cuestionarioController.enviarRespuestas(
+                idPaciente, respuestas.cast<int>());
             showDialog(
               context: context,
               builder: (context) => AlertDialog(
@@ -159,7 +161,8 @@ class _QuestPageState extends State<QuestPage> {
               context: context,
               builder: (context) => AlertDialog(
                 title: Text('Error'),
-                content: Text('No se pudieron enviar las respuestas. Inténtalo de nuevo.'),
+                content: Text(
+                    'No se pudieron enviar las respuestas. Inténtalo de nuevo.'),
                 actions: [
                   TextButton(
                     onPressed: () => Navigator.of(context).pop(),
