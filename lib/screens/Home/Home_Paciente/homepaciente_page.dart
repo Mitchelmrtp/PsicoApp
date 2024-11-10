@@ -6,20 +6,21 @@ import 'package:psicoapp/screens/Quest/quest_page.dart';
 import 'package:psicoapp/screens/Solicitar_Cita/Solicitar_Cita_page.dart';
 import 'package:psicoapp/screens/profile/psicologo/doctor_page.dart';
 import 'package:psicoapp/screens/profile/paciente/userprofile_page.dart';
+import 'package:psicoapp/screens/Routine/routine_page.dart';
 import 'homepaciente_controller.dart';
 
 class ContactSpecialistPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF112244), 
+      backgroundColor: Color(0xFF112244),
       appBar: AppBar(
-        elevation: 0, 
+        elevation: 0,
         backgroundColor: Color(0xFF112244),
-        automaticallyImplyLeading: true, 
-        centerTitle: true, 
+        automaticallyImplyLeading: true,
+        centerTitle: true,
         title: Icon(
-          Icons.sentiment_satisfied_alt, 
+          Icons.sentiment_satisfied_alt,
           color: Colors.white,
           size: 28,
         ),
@@ -29,7 +30,7 @@ class ContactSpecialistPage extends StatelessWidget {
             child: CircleAvatar(
               radius: 15,
               backgroundImage: NetworkImage(
-                  'https://randomuser.me/api/portraits/men/44.jpg'), 
+                  'https://randomuser.me/api/portraits/men/44.jpg'),
             ),
           ),
         ],
@@ -46,28 +47,26 @@ class ContactSpecialistPage extends StatelessWidget {
               ),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 40), 
+            SizedBox(height: 40),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green, 
-                foregroundColor: Colors.white, 
-                minimumSize: Size(200, 50), 
+                backgroundColor: Colors.green,
+                foregroundColor: Colors.white,
+                minimumSize: Size(200, 50),
               ),
               onPressed: () {
-
                 print("Confirmar contacto con especialista");
               },
               child: Text('CONFIRMAR'),
             ),
-            SizedBox(height: 20), 
+            SizedBox(height: 20),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red, 
-                foregroundColor: Colors.white, 
-                minimumSize: Size(200, 50), 
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+                minimumSize: Size(200, 50),
               ),
               onPressed: () {
-
                 Navigator.pop(context);
               },
               child: Text('CANCELAR'),
@@ -79,14 +78,15 @@ class ContactSpecialistPage extends StatelessWidget {
   }
 }
 
-
 class HomePacientePage extends StatefulWidget {
   final Usuario usuarioLogged;
 
-  const HomePacientePage({Key? key, required this.usuarioLogged}) : super(key: key);
+  const HomePacientePage({Key? key, required this.usuarioLogged})
+      : super(key: key);
 
   @override
-  _HomePacientePageState createState() => _HomePacientePageState(usuarioLogged: usuarioLogged);
+  _HomePacientePageState createState() =>
+      _HomePacientePageState(usuarioLogged: usuarioLogged);
 }
 
 class _HomePacientePageState extends State<HomePacientePage> {
@@ -108,15 +108,14 @@ class _HomePacientePageState extends State<HomePacientePage> {
   @override
   void initState() {
     super.initState();
-    userId = usuarioLogged.id.toString(); 
-    roomId = 'chat_${usuarioLogged.id}';  
-
+    userId = usuarioLogged.id.toString();
+    roomId = 'chat_${usuarioLogged.id}';
 
     _widgetOptions = [
       SolicitarCitaPage(usuarioLogged),
-      QuestPage(), 
-      ChatPage(roomId: roomId, userId: userId), 
-      DoctorProfilePage(doctorId: usuarioLogged.id) 
+      QuestPage(),
+      ChatPage(roomId: roomId, userId: userId),
+      DoctorProfilePage(doctorId: usuarioLogged.id)
     ];
   }
 
@@ -126,22 +125,22 @@ class _HomePacientePageState extends State<HomePacientePage> {
     });
   }
 
-
   Widget _buildDrawer() {
     return Drawer(
       child: Container(
-        color: Color(0xFF112244), 
+        color: Color(0xFF112244),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            SizedBox(height: 20), 
-
+            SizedBox(height: 20),
             ExpansionTile(
               leading: Icon(Icons.notifications, color: Colors.white),
-              title: Text('Notificaciones', style: TextStyle(color: Colors.white)),
+              title:
+                  Text('Notificaciones', style: TextStyle(color: Colors.white)),
               children: <Widget>[
                 ListTile(
-                  title: Text('Activar Notificaciones', style: TextStyle(color: Colors.white)),
+                  title: Text('Activar Notificaciones',
+                      style: TextStyle(color: Colors.white)),
                   trailing: Switch(
                     value: _notificationsEnabled,
                     onChanged: (value) {
@@ -150,15 +149,17 @@ class _HomePacientePageState extends State<HomePacientePage> {
                       });
                     },
                   ),
-                  subtitle: Text(_notificationsEnabled ? 'Activado' : 'Desactivado', style: TextStyle(color: Colors.grey)),
+                  subtitle: Text(
+                      _notificationsEnabled ? 'Activado' : 'Desactivado',
+                      style: TextStyle(color: Colors.grey)),
                 ),
                 ListTile(
-                  title: Text('Tono de notificación', style: TextStyle(color: Colors.white)),
+                  title: Text('Tono de notificación',
+                      style: TextStyle(color: Colors.white)),
                   trailing: Icon(Icons.arrow_drop_down, color: Colors.white),
-                  subtitle: Text('Latido de corazón', style: TextStyle(color: Colors.grey)),
-                  onTap: () {
-
-                  },
+                  subtitle: Text('Latido de corazón',
+                      style: TextStyle(color: Colors.grey)),
+                  onTap: () {},
                 ),
                 ListTile(
                   title: Text('Agenda', style: TextStyle(color: Colors.white)),
@@ -170,10 +171,12 @@ class _HomePacientePageState extends State<HomePacientePage> {
                       });
                     },
                   ),
-                  subtitle: Text(_agendaEnabled ? 'Activado' : 'Desactivado', style: TextStyle(color: Colors.grey)),
+                  subtitle: Text(_agendaEnabled ? 'Activado' : 'Desactivado',
+                      style: TextStyle(color: Colors.grey)),
                 ),
                 ListTile(
-                  title: Text('Monitoreo emocional', style: TextStyle(color: Colors.white)),
+                  title: Text('Monitoreo emocional',
+                      style: TextStyle(color: Colors.white)),
                   trailing: Switch(
                     value: _monitoringEnabled,
                     onChanged: (value) {
@@ -182,54 +185,49 @@ class _HomePacientePageState extends State<HomePacientePage> {
                       });
                     },
                   ),
-                  subtitle: Text(_monitoringEnabled ? 'Activado' : 'Desactivado', style: TextStyle(color: Colors.grey)),
+                  subtitle: Text(
+                      _monitoringEnabled ? 'Activado' : 'Desactivado',
+                      style: TextStyle(color: Colors.grey)),
                 ),
               ],
             ),
-            Divider(color: Colors.white24, thickness: 1), 
+            Divider(color: Colors.white24, thickness: 1),
             ListTile(
               leading: Icon(Icons.security, color: Colors.white),
               title: Text('Seguridad', style: TextStyle(color: Colors.white)),
-              onTap: () {
-
-              },
-            ),
-            Divider(color: Colors.white24, thickness: 1), 
-            ListTile(
-              leading: Icon(Icons.article, color: Colors.white),
-              title: Text('Términos y condiciones', style: TextStyle(color: Colors.white)),
-              onTap: () {
-
-              },
+              onTap: () {},
             ),
             Divider(color: Colors.white24, thickness: 1),
-            
+            ListTile(
+              leading: Icon(Icons.article, color: Colors.white),
+              title: Text('Términos y condiciones',
+                  style: TextStyle(color: Colors.white)),
+              onTap: () {},
+            ),
+            Divider(color: Colors.white24, thickness: 1),
             ListTile(
               leading: Icon(Icons.privacy_tip, color: Colors.white),
-              title: Text('Política de privacidad', style: TextStyle(color: Colors.white)),
-              onTap: () {
-
-              },
+              title: Text('Política de privacidad',
+                  style: TextStyle(color: Colors.white)),
+              onTap: () {},
             ),
-            Divider(color: Colors.white24, thickness: 1), 
+            Divider(color: Colors.white24, thickness: 1),
             ListTile(
               leading: Icon(Icons.error_outline, color: Colors.white),
-              title: Text('Informar de un error', style: TextStyle(color: Colors.white)),
-              onTap: () {
-
-              },
+              title: Text('Informar de un error',
+                  style: TextStyle(color: Colors.white)),
+              onTap: () {},
             ),
             Spacer(),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red, 
-                  foregroundColor: Colors.white, 
-                  minimumSize: Size(double.infinity, 50), 
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                  minimumSize: Size(double.infinity, 50),
                 ),
                 onPressed: () {
-
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -240,17 +238,17 @@ class _HomePacientePageState extends State<HomePacientePage> {
                 child: Text('Contacta a un especialista'),
               ),
             ),
-            SizedBox(height: 20), 
+            SizedBox(height: 20),
             Center(
               child: TextButton(
                 onPressed: () {
-
                   control.goToLogIn(context);
                 },
-                child: Text('Cerrar sesión', style: TextStyle(color: Colors.white)),
+                child: Text('Cerrar sesión',
+                    style: TextStyle(color: Colors.white)),
               ),
             ),
-            SizedBox(height: 20), 
+            SizedBox(height: 20),
           ],
         ),
       ),
@@ -265,22 +263,23 @@ class _HomePacientePageState extends State<HomePacientePage> {
           label: '',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.question_mark), 
+          icon: Icon(Icons.question_mark),
+          label: '',
+        ),
+        BottomNavigationBarItem(icon: Icon(Icons.assignment), label: ''),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.chat_bubble_outline),
           label: '',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.chat_bubble_outline), 
-          label: '',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.person_outline), 
+          icon: Icon(Icons.person_outline),
           label: '',
         ),
       ],
       currentIndex: _selectedIndex,
-      selectedItemColor: Color(0XFFF26F29), 
+      selectedItemColor: Color(0XFFF26F29),
       unselectedItemColor: Colors.black,
-      backgroundColor: Colors.white, 
+      backgroundColor: Colors.white,
       showSelectedLabels: false, // Sin etiquetas
       showUnselectedLabels: false, // Sin etiquetas
       onTap: _onItemTapped,
@@ -298,7 +297,8 @@ class _HomePacientePageState extends State<HomePacientePage> {
         leading: Builder(
           builder: (context) => IconButton(
             icon: Icon(Icons.menu, color: Colors.black),
-            onPressed: () => Scaffold.of(context).openDrawer(), // Abre el Drawer
+            onPressed: () =>
+                Scaffold.of(context).openDrawer(), // Abre el Drawer
           ),
         ),
         centerTitle: true, // Carita sonriente centrada
@@ -321,7 +321,8 @@ class _HomePacientePageState extends State<HomePacientePage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => UsuarioProfilePage(usuario: usuarioLogged), // Pasar los datos del usuario
+                  builder: (context) => UsuarioProfilePage(
+                      usuario: usuarioLogged), // Pasar los datos del usuario
                 ),
               );
             },

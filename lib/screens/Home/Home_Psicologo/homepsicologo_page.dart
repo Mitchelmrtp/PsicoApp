@@ -3,15 +3,18 @@ import 'package:get/get.dart';
 import 'package:psicoapp/models/Usuario.dart';
 import 'package:psicoapp/screens/CHATIO/chatwid.dart';
 import 'package:psicoapp/screens/Sesion/Sesion_page.dart';
+import 'package:psicoapp/screens/Routine/routine_page.dart';
 import 'homepsicologo_controller.dart';
 
 class HomePsicologoPage extends StatefulWidget {
   final Usuario usuarioLogged;
 
-  const HomePsicologoPage({Key? key, required this.usuarioLogged}) : super(key: key);
+  const HomePsicologoPage({Key? key, required this.usuarioLogged})
+      : super(key: key);
 
   @override
-  _HomePsicologoPageState createState() => _HomePsicologoPageState(usuarioLogged: usuarioLogged);
+  _HomePsicologoPageState createState() =>
+      _HomePsicologoPageState(usuarioLogged: usuarioLogged);
 }
 
 class _HomePsicologoPageState extends State<HomePsicologoPage> {
@@ -26,8 +29,10 @@ class _HomePsicologoPageState extends State<HomePsicologoPage> {
   @override
   void initState() {
     super.initState();
-    userId = usuarioLogged.id.toString(); // Establecemos el userId del psicólogo
-    control.loadPacientes(usuarioLogged.id); // Cargamos los pacientes del psicólogo
+    userId =
+        usuarioLogged.id.toString(); // Establecemos el userId del psicólogo
+    control.loadPacientes(
+        usuarioLogged.id); // Cargamos los pacientes del psicólogo
   }
 
   // Cambiar de pantalla en el BottomNavigationBar
@@ -64,11 +69,13 @@ class _HomePsicologoPageState extends State<HomePsicologoPage> {
                 subtitle: Text('ID Paciente: ${paciente.id}'),
                 trailing: Icon(Icons.chat),
                 onTap: () {
-                  final String roomId = 'chat_${usuarioLogged.id}_${paciente.id}';
+                  final String roomId =
+                      'chat_${usuarioLogged.id}_${paciente.id}';
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => ChatPage(roomId: roomId, userId: userId),
+                      builder: (context) =>
+                          ChatPage(roomId: roomId, userId: userId),
                     ),
                   );
                 },
@@ -93,6 +100,8 @@ class _HomePsicologoPageState extends State<HomePsicologoPage> {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.chat), label: 'Chat'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.assignment), label: 'Rutina'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Perfil'),
         ],
         currentIndex: _selectedIndex,
